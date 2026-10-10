@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { getLocalDateKey } from '../../domain/dates.ts'
 import { repositories } from '../../db/repositories.ts'
 import { EmptyState } from '../../components/EmptyState.tsx'
+import { AboutSection } from './AboutSection.tsx'
 import { InstallHelp } from './InstallHelp.tsx'
 import { ProfileForm } from './ProfileForm.tsx'
 import { defaultProfileValues, profileToValues } from './profileValues.ts'
@@ -35,6 +36,7 @@ export function SettingsScreen() {
         onSubmit={saveProfileValues}
       />
       <InstallHelp />
+      <AboutSection />
     </div>
   )
 }

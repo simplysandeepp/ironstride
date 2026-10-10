@@ -4,6 +4,9 @@ import { defineConfig } from 'vitest/config'
 import { MANIFEST } from './src/pwa/manifest.ts'
 
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? 'dev'),
+  },
   plugins: [
     react(),
     // The service worker is a build-time concern; skip it under the test runner.

@@ -604,3 +604,15 @@ input[type='radio'] {
   display: grid;
   gap: var(--space-2);
 }
+
+.update-prompt {
+  margin: 0 var(--space-4) var(--space-3);
+  padding: var(--space-3);
+  background: var(--surface-elevated);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-md);
+}
+
+.update-prompt p {
+  margin-bottom: var(--space-2);
+}
