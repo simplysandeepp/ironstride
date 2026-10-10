@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { InsightList } from '../../components/InsightCard.tsx'
 import type { Insight } from '../../domain/insights/insightCards.ts'
+import { RunDetail } from './RunDetail.tsx'
 import { RunCharts, StrengthCharts, WeightCard, type ChartProps } from './ProgressCharts.tsx'
 import type { DashboardData } from './useDashboardData.ts'
 
@@ -52,6 +53,7 @@ export function RunTab({ data, insights }: { data: DashboardData; insights: read
         insights={insights.filter((i) => i.area === 'run')}
         empty="Log a few runs, with time and effort, and your load, pace and effort insights appear here."
       />
+      <RunDetail data={data} />
       <RunCharts {...toChartProps(data)} />
     </>
   )
