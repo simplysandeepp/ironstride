@@ -5,7 +5,12 @@ export async function showSystemNotification(title: string, body: string): Promi
     const registration =
       'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : undefined
     if (registration) {
-      await registration.showNotification(title, { body, icon: '/icons/icon-192.png', tag: title })
+      await registration.showNotification(title, {
+        body,
+        icon: '/icons/icon-192.png',
+        tag: title,
+        data: { url: '/' },
+      })
     } else {
       new Notification(title, { body, icon: '/icons/icon-192.png', tag: title })
     }

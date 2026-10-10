@@ -25,6 +25,8 @@ export default defineConfig({
               globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
               navigateFallback: '/index.html',
               cleanupOutdatedCaches: true,
+              // Makes tapping a reminder notification open the app.
+              importScripts: ['notification-click.js'],
             },
           }),
         ]),
