@@ -1,8 +1,9 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { NAV_ITEMS } from './app/navigation.ts'
 import { BottomNavigation } from './components/BottomNavigation.tsx'
+import { AutoBackupBanner } from './features/backup/AutoBackupBanner.tsx'
 import { OfflineIndicator } from './components/OfflineIndicator.tsx'
 import { UpdatePrompt } from './components/UpdatePrompt.tsx'
 import { PageHeader } from './components/PageHeader.tsx'
@@ -17,6 +18,7 @@ import { ReminderBanner } from './features/reminders/ReminderBanner.tsx'
 import { OnboardingScreen } from './features/settings/OnboardingScreen.tsx'
 import { TodayScreen } from './features/today/TodayScreen.tsx'
 import { useTheme } from './hooks/useTheme.ts'
+import { requestPersistentStorage } from './pwa/storage.ts'
 
 // Heavier, less-visited screens load on demand so the first open stays fast.
 const PlanScreen = lazy(() =>
@@ -33,6 +35,12 @@ export default function App() {
   const { theme, cycleTheme } = useTheme()
   const { pathname } = useLocation()
   const settings = useLiveQuery(() => repositories.settings.get())
+  const onboarded = Boolean(settings?.onboardingCompleted)
+
+  // Ask once, quietly, that the browser keep our data when space is tight.
+  useEffect(() => {
+    if (onboarded) void requestPersistentStorage()
+  }, [onboarded])
 
   if (!settings) return null // first read of local storage; avoids flashing onboarding
   if (!settings.onboardingCompleted) return <OnboardingScreen />
@@ -56,6 +64,7 @@ export default function App() {
       <OfflineIndicator />
       <UpdatePrompt />
       <ReminderBanner />
+      <AutoBackupBanner active />
       <main className="page-body">
         <Suspense fallback={<p className="helper">Loading…</p>}>
           <Routes>

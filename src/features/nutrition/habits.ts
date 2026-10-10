@@ -1,3 +1,4 @@
+import { db } from '../../db/database.ts'
 import { newId, repositories } from '../../db/repositories.ts'
 import type { DateKey } from '../../domain/dates.ts'
 import type { AppSettings, SupplementConfig, SupplementLog } from '../../domain/types.ts'
@@ -58,6 +59,9 @@ export async function undoLastWater(date: DateKey) {
 }
 
 export async function updateSettings(patch: Partial<AppSettings>) {
-  const current = await repositories.settings.get()
-  return repositories.settings.save({ ...current, ...patch })
+  // One transaction, so a background write (such as the backup timestamp) cannot clobber another edit.
+  return db.transaction('rw', db.settings, async () => {
+    const current = await repositories.settings.get()
+    return repositories.settings.save({ ...current, ...patch })
+  })
 }

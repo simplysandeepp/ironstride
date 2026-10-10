@@ -54,9 +54,10 @@ export function isBackupDue(
   lastBackupAt: string | undefined,
   hasData: boolean,
   now: Date = new Date(),
+  days: number = BACKUP_REMINDER_DAYS,
 ): boolean {
   if (!hasData) return false
   if (!lastBackupAt) return true
   const ageDays = (now.getTime() - new Date(lastBackupAt).getTime()) / 86_400_000
-  return !(ageDays < BACKUP_REMINDER_DAYS)
+  return !(ageDays < days)
 }
