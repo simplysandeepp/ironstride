@@ -47,3 +47,47 @@ export function validateRunLog(
     errors.rpe = 'Effort is a number from 1 to 10.'
   return errors
 }
+
+/** "45" (minutes), "45:30" (mm:ss) or "1:05:30" (h:mm:ss) to seconds; undefined if unreadable. */
+export function parseDuration(input: string): number | undefined {
+  const text = input.trim()
+  if (text === '') return undefined
+  if (/^\d+(\.\d+)?$/.test(text)) {
+    const minutes = Number(text)
+    return minutes > 0 ? Math.round(minutes * 60) : undefined
+  }
+  const parts = text.split(':')
+  if (parts.length < 2 || parts.length > 3 || !parts.every((p) => /^\d{1,2}$/.test(p)))
+    return undefined
+  const nums = parts.map(Number)
+  if (nums.slice(1).some((n) => n > 59)) return undefined
+  const seconds =
+    nums.length === 3 ? nums[0] * 3600 + nums[1] * 60 + nums[2] : nums[0] * 60 + nums[1]
+  return seconds > 0 ? seconds : undefined
+}
+
+/** 3930 -> "1:05:30"; 1650 -> "27:30". */
+export function formatDuration(totalSeconds: number | undefined): string {
+  if (totalSeconds === undefined || !Number.isFinite(totalSeconds) || totalSeconds < 0) return ''
+  const s = Math.round(totalSeconds)
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = String(s % 60).padStart(2, '0')
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${sec}` : `${m}:${sec}`
+}
+
+const LOAD_WARNING_RATIO = 1.25
+
+/**
+ * A gentle heads-up when a planned week is well above what the user has been
+ * running: the larger of their configured base and their best recent week.
+ */
+export function getLoadWarning(
+  plannedWeekKm: number,
+  baselineKm: number,
+  recentWeeklyKm: readonly number[] = [],
+): string | undefined {
+  const reference = Math.max(baselineKm, ...recentWeeklyKm)
+  if (!(reference > 0) || plannedWeekKm <= reference * LOAD_WARNING_RATIO) return undefined
+  return `This week plans ${plannedWeekKm} km, well above your recent ${reference} km. Shorten runs or swap quality work for easy running if you feel tired, and update your weekly base in Settings if it is out of date.`
+}
