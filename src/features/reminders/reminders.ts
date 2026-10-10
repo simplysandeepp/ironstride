@@ -1,4 +1,5 @@
 import { getDayOfWeek, getLocalDateKey, type DateKey } from '../../domain/dates.ts'
+import { getZonedTimeOfDay } from '../../domain/timezone.ts'
 import type { Reminder } from '../../domain/types.ts'
 
 type Defaults = Omit<Reminder, 'enabled'>
@@ -44,8 +45,7 @@ export const isValidTime = (t: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(t)
 
 const minutes = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3))
 
-export const timeOf = (now: Date) =>
-  `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+export const timeOf = (now: Date) => getZonedTimeOfDay(now)
 
 /** Quiet hours may wrap midnight (22:00 to 07:00). Unset or equal times mean no quiet hours. */
 export function isInQuietHours(time: string, start?: string, end?: string): boolean {

@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useRef, useState } from 'react'
 import { ConfirmDialog } from '../../components/ConfirmDialog.tsx'
+import { formatDateTime } from '../../domain/timezone.ts'
 import { repositories } from '../../db/repositories.ts'
 import {
   countPlan,
@@ -115,7 +116,7 @@ export function BackupSection() {
         </p>
       )}
       {status?.lastBackupAt && (
-        <p className="helper">Last backup: {status.lastBackupAt.slice(0, 10)}</p>
+        <p className="helper">Last backup: {formatDateTime(status.lastBackupAt)}</p>
       )}
 
       <div className="form-actions">

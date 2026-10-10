@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState } from 'react'
 import { repositories } from '../../db/repositories.ts'
+import { formatDateTime } from '../../domain/timezone.ts'
 import { isStoragePersistent, requestPersistentStorage } from '../../pwa/storage.ts'
 import { updateSettings } from '../nutrition/habits.ts'
 import { runAutoBackup, type AutoBackupStatus } from './autoBackup.ts'
@@ -95,7 +96,7 @@ export function AutoBackupSection() {
             <p role="status">
               Saving to <strong>{settings.autoBackupFolderName}</strong>.{' '}
               {settings.lastAutoBackupAt
-                ? `Last backup: ${settings.lastAutoBackupAt.slice(0, 16).replace('T', ' ')} UTC.`
+                ? `Last backup: ${formatDateTime(settings.lastAutoBackupAt)}.`
                 : 'No backup yet.'}
             </p>
           )}

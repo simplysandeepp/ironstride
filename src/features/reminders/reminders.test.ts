@@ -16,7 +16,9 @@ import {
 
 const none: ReminderMemory = { fired: new Set(), snoozedUntil: {} }
 // Monday 12 October 2026, local time
-const at = (h: number, m = 0) => new Date(2026, 9, 12, h, m)
+// Instants are written in India Standard Time, the zone the app runs on.
+const pad = (n: number) => String(n).padStart(2, '0')
+const at = (h: number, m = 0) => new Date(`2026-10-12T${pad(h)}:${pad(m)}:00+05:30`)
 const reminder = (over: Partial<Reminder> = {}): Reminder => ({
   id: 'gym',
   title: 'Gym',
@@ -97,7 +99,7 @@ describe('getDueReminders', () => {
       snoozedUntil: {},
     }
     expect(getDueReminders([reminder()], at(8), handled)).toEqual([])
-    const nextMonday = new Date(2026, 9, 19, 8)
+    const nextMonday = new Date('2026-10-19T08:00:00+05:30')
     expect(getDueReminders([reminder()], nextMonday, handled)).toHaveLength(1)
   })
 

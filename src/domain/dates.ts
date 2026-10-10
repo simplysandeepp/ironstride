@@ -3,6 +3,8 @@
  * does its arithmetic in UTC, so daylight-saving changes can never shift a day.
  */
 
+import { APP_TIME_ZONE } from './timezone.ts'
+
 export type DateKey = string
 
 const DATE_KEY_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/
@@ -32,24 +34,28 @@ function fromUtcDate(date: Date): DateKey {
   return `${y}-${m}-${d}`
 }
 
+const dateKeyFormatters = new Map<string, Intl.DateTimeFormat>()
+
 /**
- * The calendar date of an instant in the user's timezone (device timezone by
- * default). Late-night logs therefore stay on the day the user experienced.
+ * The calendar date of an instant in the app's time zone (India Standard Time unless another
+ * zone is given). Late-night logs therefore stay on the day the user experienced.
  */
-export function getLocalDateKey(date: Date = new Date(), timeZone?: string): DateKey {
-  if (!timeZone) {
-    const y = String(date.getFullYear()).padStart(4, '0')
-    const m = String(date.getMonth() + 1).padStart(2, '0')
-    const d = String(date.getDate()).padStart(2, '0')
-    return `${y}-${m}-${d}`
+export function getLocalDateKey(
+  date: Date = new Date(),
+  timeZone: string = APP_TIME_ZONE,
+): DateKey {
+  let f = dateKeyFormatters.get(timeZone)
+  if (!f) {
+    // The en-CA locale writes dates as YYYY-MM-DD.
+    f = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    dateKeyFormatters.set(timeZone, f)
   }
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(date)
-  return parts
+  return f.format(date)
 }
 
 export function addDays(key: DateKey, days: number): DateKey {
