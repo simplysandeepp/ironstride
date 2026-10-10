@@ -6,7 +6,13 @@ import { db } from '../../db/database.ts'
 import { repositories } from '../../db/repositories.ts'
 import { formatDateLong, getLocalDateKey, type DateKey } from '../../domain/dates.ts'
 import { isGymWorkout, isRunWorkout } from '../../domain/programme.ts'
-import { addWater, QUICK_SUPPLEMENTS, setSupplementTaken, WATER_TARGET_ML } from './quickLogs.ts'
+import {
+  addWater,
+  getSupplements,
+  getWaterServing,
+  getWaterTarget,
+  setSupplementStatus,
+} from '../nutrition/habits.ts'
 import { buildTodayModel, type TaskStatus } from './todayModel.ts'
 
 const STATUS_LABEL: Record<TaskStatus, string> = {
@@ -27,6 +33,7 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
       targets: await repositories.nutritionTargets.forDate(today),
       supplements: await repositories.supplementLogs.onDate(today),
       water: await repositories.waterEntries.onDate(today),
+      settings: await repositories.settings.get(),
     }),
     [today],
   )
@@ -139,21 +146,26 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
 
       <section className="card" aria-labelledby="quick-heading">
         <h2 id="quick-heading">Quick log</h2>
-        {QUICK_SUPPLEMENTS.map((s) => (
-          <label key={s.key} className="check">
-            <input
-              type="checkbox"
-              checked={takenKeys.has(s.key)}
-              onChange={(e) => void setSupplementTaken(today, s, e.target.checked)}
-            />
-            {s.label}
-          </label>
-        ))}
+        {getSupplements(data.settings)
+          .filter((s) => s.enabled)
+          .map((s) => (
+            <label key={s.key} className="check">
+              <input
+                type="checkbox"
+                checked={takenKeys.has(s.key)}
+                onChange={(e) =>
+                  void setSupplementStatus(today, s, e.target.checked ? 'taken' : null)
+                }
+              />
+              {s.label} ({s.amount} {s.unit})
+            </label>
+          ))}
         <p>
-          Water: <span className="metric-inline">{waterMl}</span> / {WATER_TARGET_ML} ml
+          Water: <span className="metric-inline">{waterMl}</span> / {getWaterTarget(data.settings)}{' '}
+          ml
         </p>
-        <button type="button" onClick={() => void addWater(today)}>
-          Add 250 ml water
+        <button type="button" onClick={() => void addWater(today, getWaterServing(data.settings))}>
+          Add {getWaterServing(data.settings)} ml water
         </button>
       </section>
     </div>
