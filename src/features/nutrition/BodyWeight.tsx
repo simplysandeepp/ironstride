@@ -124,6 +124,7 @@ export function BodyWeight({ date }: { date: DateKey }) {
         </button>
       )}
       <LineChart
+        tone="body"
         title="Body weight over time"
         unit="kg"
         points={trend.map((t) => ({ date: t.date, value: t.weightKg, avg: t.rollingAvgKg }))}

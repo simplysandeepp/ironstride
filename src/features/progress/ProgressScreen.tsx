@@ -16,6 +16,7 @@ import { ProgressCharts } from './ProgressCharts.tsx'
 import { DaySummary } from './DaySummary.tsx'
 import { Heatmap } from './Heatmap.tsx'
 import { getPlannedRestDays } from './progressModel.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 const FILTERS: { value: HeatmapFilter; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -33,8 +34,7 @@ export function ProgressScreen({ today = getLocalDateKey() }: { today?: DateKey 
   const [filter, setFilter] = useState<HeatmapFilter>('all')
   const [selected, setSelected] = useState<DateKey>(today)
 
-  if (plan === undefined || !logs)
-    return <EmptyState title="Loading">Reading your history.</EmptyState>
+  if (plan === undefined || !logs) return <LoadingCard />
   if (plan === null) {
     return <EmptyState title="Set up your plan">Add your details in Settings first.</EmptyState>
   }

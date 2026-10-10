@@ -9,6 +9,7 @@ import { isGymWorkout, type ProgrammeWorkout } from '../../domain/programme.ts'
 import { isPlannedSessionDone } from '../../domain/streaks.ts'
 import { completedSetCount } from './sessionModel.ts'
 import { startOrResumeSession } from './sessionActions.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 type Props = { today?: DateKey }
 
@@ -17,8 +18,7 @@ export function GymScreen({ today = getLocalDateKey() }: Props) {
   const sessions = useLiveQuery(() => db.gymSessions.toArray())
   const navigate = useNavigate()
 
-  if (plan === undefined || !sessions)
-    return <EmptyState title="Loading">Reading your plan.</EmptyState>
+  if (plan === undefined || !sessions) return <LoadingCard />
   if (plan === null) {
     return <EmptyState title="Set up your plan">Add your details in Settings first.</EmptyState>
   }

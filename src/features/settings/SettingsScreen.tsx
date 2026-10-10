@@ -1,7 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { getLocalDateKey } from '../../domain/dates.ts'
 import { repositories } from '../../db/repositories.ts'
-import { EmptyState } from '../../components/EmptyState.tsx'
 import { RemindersSection } from '../reminders/RemindersSection.tsx'
 import { AutoBackupSection } from '../backup/AutoBackupSection.tsx'
 import { BackupSection } from '../backup/BackupSection.tsx'
@@ -10,6 +9,7 @@ import { InstallHelp } from './InstallHelp.tsx'
 import { ProfileForm } from './ProfileForm.tsx'
 import { defaultProfileValues, profileToValues } from './profileValues.ts'
 import { saveProfileValues } from './saveProfile.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 export function SettingsScreen() {
   const data = useLiveQuery(async () => {
@@ -20,7 +20,7 @@ export function SettingsScreen() {
     }
   })
 
-  if (!data) return <EmptyState title="Loading">Reading your settings.</EmptyState>
+  if (!data) return <LoadingCard />
 
   const initial =
     data.profile && data.targets

@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
+import { ProgressBar } from '../../components/ProgressBar.tsx'
 import { repositories } from '../../db/repositories.ts'
 import type { DateKey } from '../../domain/dates.ts'
 import {
@@ -54,7 +55,7 @@ export function DailyHabits({ date }: { date: DateKey }) {
             <strong>{waterMl}</strong> / {target} ml
           </span>
         </div>
-        <progress aria-label="Water progress" max={target} value={Math.min(waterMl, target)} />
+        <ProgressBar label="Water progress" value={waterMl} max={target} tone="water" />
         <div className="form-actions">
           <button type="button" onClick={() => void addWater(date, serving)}>
             Add {serving} ml

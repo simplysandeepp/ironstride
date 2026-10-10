@@ -19,6 +19,7 @@ import {
   type RunFormErrors,
   type RunFormValues,
 } from './runForm.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 type FormProps = {
   initial: RunFormValues
@@ -121,8 +122,7 @@ export function RunLogScreen({ today = getLocalDateKey() }: { today?: string }) 
     [editId],
   )
 
-  if (plan === undefined || !existing)
-    return <EmptyState title="Loading">Opening the form.</EmptyState>
+  if (plan === undefined || !existing) return <LoadingCard />
 
   if (editId) {
     if (!existing.run)

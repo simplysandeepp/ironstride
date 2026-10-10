@@ -1,6 +1,7 @@
 export type BarDatum = { label: string; value: number; marker?: number }
 
 type Props = {
+  tone?: 'run' | 'gym' | 'nutrition' | 'body'
   data: readonly BarDatum[]
   unit: string
   /** Plain-language summary for screen readers, always shown below the chart. */
@@ -13,7 +14,7 @@ const HEIGHT = 150
 const PAD = { top: 18, bottom: 26, left: 8, right: 8 }
 
 /** Simple SVG bar chart. Empty data shows a hint instead of an empty frame. */
-export function BarChart({ data, unit, summary, title }: Props) {
+export function BarChart({ data, unit, summary, title, tone }: Props) {
   // Nothing to plot: show the explanation only, not an empty frame.
   if (data.every((d) => d.value === 0 && !d.marker)) {
     return <p className="helper">{summary}</p>
@@ -24,7 +25,7 @@ export function BarChart({ data, unit, summary, title }: Props) {
   const barW = Math.min(28, slot * 0.6)
 
   return (
-    <figure className="chart">
+    <figure className="chart" data-tone={tone}>
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={title} focusable="false">
         {data.map((d, i) => {
           const h = (d.value / max) * plotH

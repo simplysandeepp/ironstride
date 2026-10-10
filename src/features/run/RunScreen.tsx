@@ -24,14 +24,14 @@ import {
 } from '../../domain/running.ts'
 import { isPlannedSessionDone } from '../../domain/streaks.ts'
 import { RUN_TYPE_LABELS } from './runForm.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 export function RunScreen({ today = getLocalDateKey() }: { today?: DateKey }) {
   const plan = useProgramme()
   const [deleting, setDeleting] = useState<string | null>(null)
   const runs = useLiveQuery(() => db.runLogs.toArray())
 
-  if (plan === undefined || !runs)
-    return <EmptyState title="Loading">Reading your plan.</EmptyState>
+  if (plan === undefined || !runs) return <LoadingCard />
   if (plan === null) {
     return <EmptyState title="Set up your plan">Add your details in Settings first.</EmptyState>
   }
