@@ -1,17 +1,12 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { NAV_ITEMS } from './app/navigation.ts'
-import {
-  GymScreen,
-  NutritionScreen,
-  ProgressScreen,
-  RunScreen,
-  TodayScreen,
-} from './app/screens.tsx'
+import { GymScreen, NutritionScreen, ProgressScreen, RunScreen } from './app/screens.tsx'
 import { BottomNavigation } from './components/BottomNavigation.tsx'
 import { PageHeader } from './components/PageHeader.tsx'
 import { repositories } from './db/repositories.ts'
 import { OnboardingScreen } from './features/settings/OnboardingScreen.tsx'
+import { TodayScreen } from './features/today/TodayScreen.tsx'
 import { SettingsScreen } from './features/settings/SettingsScreen.tsx'
 import { useTheme } from './hooks/useTheme.ts'
 
