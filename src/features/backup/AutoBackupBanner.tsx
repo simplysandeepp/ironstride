@@ -26,11 +26,12 @@ export function AutoBackupBanner({ active }: { active: boolean }) {
     return (
       <div className="update-prompt" role="status" aria-label="Backup permission">
         <p>
-          <strong>Allow backups.</strong> Your browser needs one tap to let IronStride save to
+          <strong>Allow backups.</strong> Tap anywhere, then choose{' '}
+          <strong>Allow on every visit</strong> so IronStride can save to
           {settings.autoBackupFolderName
             ? ` "${settings.autoBackupFolderName}"`
             : ' your backup folder'}{' '}
-          again.
+          every time you open it, without asking again.
         </p>
         <button
           type="button"

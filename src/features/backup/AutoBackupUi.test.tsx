@@ -224,6 +224,62 @@ describe('AutoBackupBanner', () => {
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Allow backups' })).toBeNull())
   })
 
+  it('asks the browser by itself on the first touch anywhere, even right after a backup', async () => {
+    await seedRun()
+    const folder = createFakeFolder('IronStride Backup', 'prompt')
+    store.handle = folder
+    pickerReturns(folder)
+    await repositories.settings.save({
+      ...DEFAULT_SETTINGS,
+      autoBackupEnabled: true,
+      autoBackupFolderName: folder.name,
+      lastAutoBackupAt: new Date(Date.now() - 5_000).toISOString(),
+    })
+    renderBanner()
+    await screen.findByRole('button', { name: 'Allow backups' })
+    expect(folder.permissionRequests).toBe(0)
+    await userEvent.click(document.body)
+    await waitFor(() => expect(folder.files.has(BACKUP_FILE)).toBe(true))
+    expect(folder.permissionRequests).toBe(1)
+  })
+
+  it('asks once per open: a refusal is not repeated on every touch', async () => {
+    await seedRun()
+    const folder = createFakeFolder('IronStride Backup', 'prompt')
+    folder.grantOnRequest = false
+    store.handle = folder
+    pickerReturns(folder)
+    await repositories.settings.save({
+      ...DEFAULT_SETTINGS,
+      autoBackupEnabled: true,
+      autoBackupFolderName: folder.name,
+    })
+    renderBanner()
+    await screen.findByRole('button', { name: 'Allow backups' })
+    await userEvent.click(document.body)
+    await waitFor(() => expect(folder.permissionRequests).toBe(1))
+    await userEvent.click(document.body)
+    await userEvent.click(document.body)
+    expect(folder.permissionRequests).toBe(1)
+    // The button is still there for a deliberate retry.
+    await userEvent.click(screen.getByRole('button', { name: 'Allow backups' }))
+    await waitFor(() => expect(folder.permissionRequests).toBe(2))
+  })
+
+  it('tells the person which choice stops the question coming back', async () => {
+    const folder = createFakeFolder('IronStride Backup', 'prompt')
+    store.handle = folder
+    pickerReturns(folder)
+    await seedRun()
+    await repositories.settings.save({
+      ...DEFAULT_SETTINGS,
+      autoBackupEnabled: true,
+      autoBackupFolderName: folder.name,
+    })
+    renderBanner()
+    expect(await screen.findByText(/allow on every visit/i)).toBeInTheDocument()
+  })
+
   it('reminds daily with a one-tap save where folders are unsupported', async () => {
     await seedRun()
     await repositories.settings.save({ ...DEFAULT_SETTINGS, autoBackupEnabled: true })

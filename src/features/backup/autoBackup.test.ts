@@ -94,6 +94,25 @@ describe('runAutoBackup', () => {
     expect(folder!.writes).toEqual([])
   })
 
+  it('still asks the browser for permission when the last backup was moments ago', async () => {
+    // The "Allow backups" tap used to be skipped as "too recent", so nothing was ever allowed.
+    const justNow = new Date(NOW.getTime() - 5_000).toISOString()
+    const folder = createFakeFolder('x', 'prompt')
+    const { deps } = setup({ folder, settings: { lastAutoBackupAt: justNow } })
+    expect(await runAutoBackup(deps, { requestPermission: true })).toBe('done')
+    expect(folder.permissionRequests).toBe(1)
+    expect(folder.permission).toBe('granted')
+  })
+
+  it('keeps asking for access, not pretending, when it is denied right after a recent backup', async () => {
+    const justNow = new Date(NOW.getTime() - 5_000).toISOString()
+    const folder = createFakeFolder('x', 'prompt')
+    folder.grantOnRequest = false
+    const { deps } = setup({ folder, settings: { lastAutoBackupAt: justNow } })
+    expect(await runAutoBackup(deps, { requestPermission: true })).toBe('needs-permission')
+    expect(folder.permissionRequests).toBe(1)
+  })
+
   it('asks for permission only when told it came from a tap', async () => {
     const { deps, folder } = setup({ folder: createFakeFolder('x', 'prompt') })
     expect(await runAutoBackup(deps, { requestPermission: true })).toBe('done')
