@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { getLocalDateKey } from '../../domain/dates.ts'
 import { repositories } from '../../db/repositories.ts'
 import { EmptyState } from '../../components/EmptyState.tsx'
+import { InstallHelp } from './InstallHelp.tsx'
 import { ProfileForm } from './ProfileForm.tsx'
 import { defaultProfileValues, profileToValues } from './profileValues.ts'
 import { saveProfileValues } from './saveProfile.ts'
@@ -23,7 +24,7 @@ export function SettingsScreen() {
       : defaultProfileValues(getLocalDateKey())
 
   return (
-    <section>
+    <div className="stack">
       <p className="helper">
         Changing your weekly running or start date adjusts your plan. Past logs are never rewritten.
       </p>
@@ -33,6 +34,7 @@ export function SettingsScreen() {
         submitLabel="Save changes"
         onSubmit={saveProfileValues}
       />
-    </section>
+      <InstallHelp />
+    </div>
   )
 }
