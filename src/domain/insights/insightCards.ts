@@ -22,12 +22,12 @@ import {
   getWeightProgress,
 } from './fuelInsights.ts'
 import {
-  EASY_SHARE_REFERENCE,
   getEasyEffortTrend,
   getEasyPaceTrend,
   getEffortDiscipline,
   getIntensityMix,
   getLoadRamp,
+  getPlannedEasyShare,
   getRunBests,
 } from './runInsights.ts'
 import { getReadyToProgress, getRecentPRs, getStalledLifts } from './strengthInsights.ts'
@@ -63,8 +63,9 @@ export const THRESHOLDS = {
   easyEffortShareGood: 0.8,
   easyEffortShareLow: 0.6,
   easyEffortRise: 1,
-  intensityEasyLow: 0.7,
-  intensityEasyGood: 0.75,
+  /** How far below the plan's own easy share counts as noticeably more hard running. */
+  mixBelowPlan: 0.1,
+  mixMatchesPlan: 0.05,
   newLongestRunDays: 14,
   minLoggedDaysForFood: 4,
   proteinGoodDays: 5,
@@ -245,22 +246,26 @@ function runInsights(input: InsightInput, add: (i: Insight) => void) {
     })
 
   const mix = getIntensityMix(runLogs, today)
-  if (mix && mix.easyShare < T.intensityEasyLow)
-    add({
-      id: 'mix-hard',
-      area: 'run',
-      tone: 'info',
-      title: 'A lot of hard running',
-      detail: `${pct(mix.easyShare)} of the last 4 weeks' distance was easy (about ${pct(EASY_SHARE_REFERENCE)} is a common guideline). Mostly easy running builds the base.`,
-    })
-  if (mix && mix.easyShare >= T.intensityEasyGood)
-    add({
-      id: 'mix-good',
-      area: 'run',
-      tone: 'good',
-      title: 'Good mix of easy and hard',
-      detail: `${pct(mix.easyShare)} of the last 4 weeks' distance was easy running.`,
-    })
+  const plannedEasy = getPlannedEasyShare(input.programme, input.profile.trainingStartDate, today)
+  if (mix && plannedEasy !== null) {
+    if (mix.easyShare < plannedEasy - T.mixBelowPlan) {
+      add({
+        id: 'mix-hard',
+        area: 'run',
+        tone: 'info',
+        title: 'More hard running than planned',
+        detail: `${pct(mix.easyShare)} of the last 4 weeks' distance was easy, against about ${pct(plannedEasy)} in your plan. Mostly easy running builds the base, so keep easy days easy.`,
+      })
+    } else if (mix.easyShare >= plannedEasy - T.mixMatchesPlan) {
+      add({
+        id: 'mix-good',
+        area: 'run',
+        tone: 'good',
+        title: 'Running mix matches your plan',
+        detail: `${pct(mix.easyShare)} of the last 4 weeks' distance was easy, close to the ${pct(plannedEasy)} your plan calls for.`,
+      })
+    }
+  }
 
   const bests = getRunBests(runLogs)
   if (

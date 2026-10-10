@@ -17,7 +17,7 @@ import {
   plannedKmForWeek,
 } from './chartModel.ts'
 
-type Props = {
+export type ChartProps = {
   today: DateKey
   programme: Programme
   profile: UserProfile
@@ -32,20 +32,9 @@ type Props = {
 
 const weekLabel = (weekStart: DateKey) => `${weekStart.slice(8)}/${weekStart.slice(5, 7)}`
 
-export function ProgressCharts(props: Props) {
-  const { today, programme, profile, runs, gymSessions, measurements } = props
-  const [exerciseId, setExerciseId] = useState('')
-
-  const summaries = getWeeklyRunSummaries(runs, today)
-  const gymWeeks = getWeeklySessionCounts(props.gymPlanned, props.gymDone, today)
-  const runWeeks = getWeeklySessionCounts(props.runPlanned, props.runDone, today)
-  const trend = getWeightTrend(measurements)
-  const logged = getLoggedExercises(gymSessions)
-  const chosen = exerciseId || logged[0]?.id || ''
-  const strength = chosen ? getStrengthSeries(gymSessions, chosen) : []
+export function PhaseCard(props: ChartProps) {
+  const { today, programme, profile } = props
   const phase = getPhaseSummary(programme, profile.trainingStartDate, today)
-  const hasRuns = summaries.some((w) => w.km > 0)
-  const latestWeight = trend.at(-1)
 
   return (
     <>
@@ -65,7 +54,18 @@ export function ProgressCharts(props: Props) {
           </p>
         </section>
       )}
+    </>
+  )
+}
 
+export function RunCharts(props: ChartProps) {
+  const { today, programme, profile, runs } = props
+  const summaries = getWeeklyRunSummaries(runs, today)
+  const runWeeks = getWeeklySessionCounts(props.runPlanned, props.runDone, today)
+  const hasRuns = summaries.some((w) => w.km > 0)
+
+  return (
+    <>
       <section className="card" aria-labelledby="km-heading">
         <h2 id="km-heading">Weekly distance</h2>
         <BarChart
@@ -98,21 +98,6 @@ export function ProgressCharts(props: Props) {
         />
       </section>
 
-      <section className="card" aria-labelledby="gym-heading">
-        <h2 id="gym-heading">Gym sessions vs target</h2>
-        <BarChart
-          tone="gym"
-          title="Completed gym sessions per week"
-          unit="sessions"
-          data={gymWeeks.map((w) => ({
-            label: weekLabel(w.weekStart),
-            value: w.completed,
-            marker: w.planned || undefined,
-          }))}
-          summary={`Gold lines are planned sessions. Completed: ${gymWeeks.map((w) => `${w.completed}/${w.planned}`).join(', ')}.`}
-        />
-      </section>
-
       <section className="card" aria-labelledby="runs-heading">
         <h2 id="runs-heading">Runs vs target</h2>
         <BarChart
@@ -126,20 +111,32 @@ export function ProgressCharts(props: Props) {
           summary={`Gold lines are planned runs. Completed: ${runWeeks.map((w) => `${w.completed}/${w.planned}`).join(', ')}.`}
         />
       </section>
+    </>
+  )
+}
 
-      <section className="card" aria-labelledby="weight-heading">
-        <h2 id="weight-heading">Body weight</h2>
-        <LineChart
-          tone="body"
-          title="Body weight trend"
-          unit="kg"
-          points={trend.map((t) => ({ date: t.date, value: t.weightKg, avg: t.rollingAvgKg }))}
-          band={{ min: profile.targetWeightMinKg, max: profile.targetWeightMaxKg }}
-          summary={
-            latestWeight
-              ? `Latest ${latestWeight.weightKg} kg. Weight gain is not all muscle; judge it over weeks alongside strength and waist.`
-              : 'No weight logged yet. Add a morning weight on the Nutrition screen.'
-          }
+export function StrengthCharts(props: ChartProps) {
+  const { today, gymSessions } = props
+  const [exerciseId, setExerciseId] = useState('')
+  const gymWeeks = getWeeklySessionCounts(props.gymPlanned, props.gymDone, today)
+  const logged = getLoggedExercises(gymSessions)
+  const chosen = exerciseId || logged[0]?.id || ''
+  const strength = chosen ? getStrengthSeries(gymSessions, chosen) : []
+
+  return (
+    <>
+      <section className="card" aria-labelledby="gym-heading">
+        <h2 id="gym-heading">Gym sessions vs target</h2>
+        <BarChart
+          tone="gym"
+          title="Completed gym sessions per week"
+          unit="sessions"
+          data={gymWeeks.map((w) => ({
+            label: weekLabel(w.weekStart),
+            value: w.completed,
+            marker: w.planned || undefined,
+          }))}
+          summary={`Gold lines are planned sessions. Completed: ${gymWeeks.map((w) => `${w.completed}/${w.planned}`).join(', ')}.`}
         />
       </section>
 
@@ -176,6 +173,32 @@ export function ProgressCharts(props: Props) {
             />
           </>
         )}
+      </section>
+    </>
+  )
+}
+
+export function WeightCard(props: ChartProps) {
+  const { profile, measurements } = props
+  const trend = getWeightTrend(measurements)
+  const latestWeight = trend.at(-1)
+
+  return (
+    <>
+      <section className="card" aria-labelledby="weight-heading">
+        <h2 id="weight-heading">Body weight</h2>
+        <LineChart
+          tone="body"
+          title="Body weight trend"
+          unit="kg"
+          points={trend.map((t) => ({ date: t.date, value: t.weightKg, avg: t.rollingAvgKg }))}
+          band={{ min: profile.targetWeightMinKg, max: profile.targetWeightMaxKg }}
+          summary={
+            latestWeight
+              ? `Latest ${latestWeight.weightKg} kg. Weight gain is not all muscle; judge it over weeks alongside strength and waist.`
+              : 'No weight logged yet. Add a morning weight on the Nutrition screen.'
+          }
+        />
       </section>
     </>
   )
