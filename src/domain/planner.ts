@@ -121,3 +121,18 @@ export function getWorkoutDate(workout: ProgrammeWorkout, startDate: DateKey): D
   const offset = (workout.dayOfWeek - 1 + 7) % 7
   return addDays(monday, offset)
 }
+
+export type PlannedSession = { id: string; date: DateKey }
+
+/** Every scheduled gym or run session in the programme, with its calendar date. */
+export function getPlannedSessions(
+  programme: Programme,
+  startDate: DateKey,
+  kind: 'gym' | 'run',
+): PlannedSession[] {
+  return programme.weeks
+    .flatMap((week) => week.workouts)
+    .filter((w) => (kind === 'gym' ? w.type === 'gym' : isRunWorkout(w)))
+    .map((w) => ({ id: w.id, date: getWorkoutDate(w, startDate) }))
+    .filter((s) => daysBetween(startDate, s.date) >= 0)
+}
