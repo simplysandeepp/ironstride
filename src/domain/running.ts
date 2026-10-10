@@ -1,4 +1,4 @@
-import { getWeekDays, type DateKey } from './dates.ts'
+import { addDays, getWeekDays, getWeekStart, type DateKey } from './dates.ts'
 import type { RunLog } from './types.ts'
 
 /** Seconds per km, or undefined when distance or duration is missing or not positive. */
@@ -90,4 +90,25 @@ export function getLoadWarning(
   const reference = Math.max(baselineKm, ...recentWeeklyKm)
   if (!(reference > 0) || plannedWeekKm <= reference * LOAD_WARNING_RATIO) return undefined
   return `This week plans ${plannedWeekKm} km, well above your recent ${reference} km. Shorten runs or swap quality work for easy running if you feel tired, and update your weekly base in Settings if it is out of date.`
+}
+
+export type WeeklyRunSummary = { weekStart: DateKey; km: number; longestRunKm: number }
+
+/** The last `weeks` Monday-start weeks ending with the week containing `endDate`, oldest first. */
+export function getWeeklyRunSummaries(
+  runLogs: readonly RunLog[],
+  endDate: DateKey,
+  weeks = 8,
+): WeeklyRunSummary[] {
+  const lastStart = getWeekStart(endDate)
+  return Array.from({ length: weeks }, (_, i) => {
+    const weekStart = addDays(lastStart, -7 * (weeks - 1 - i))
+    const days = new Set(getWeekDays(weekStart))
+    const inWeek = runLogs.filter((r) => r.completed && days.has(r.date))
+    return {
+      weekStart,
+      km: Math.round(inWeek.reduce((s, r) => s + r.actualDistanceKm, 0) * 100) / 100,
+      longestRunKm: inWeek.reduce((max, r) => Math.max(max, r.actualDistanceKm), 0),
+    }
+  })
 }

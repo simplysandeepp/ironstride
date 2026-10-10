@@ -367,3 +367,32 @@ select {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
 }
+
+.chart {
+  margin: 0;
+}
+
+.chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.bar {
+  fill: var(--run);
+}
+
+.bar-marker {
+  stroke: var(--gold);
+  stroke-width: 2;
+}
+
+.chart-axis {
+  stroke: var(--border);
+}
+
+.chart-value,
+.chart-label {
+  fill: var(--text-secondary);
+  font-size: 10px;
+}
