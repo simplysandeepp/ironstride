@@ -20,6 +20,7 @@ import { OnboardingScreen } from './features/settings/OnboardingScreen.tsx'
 import { TodayScreen } from './features/today/TodayScreen.tsx'
 import { useTheme } from './hooks/useTheme.ts'
 import { backfillProteinPowderFood } from './features/nutrition/habits.ts'
+import { useNotificationNavigation } from './pwa/notificationNavigation.ts'
 import { requestPersistentStorage } from './pwa/storage.ts'
 
 // Heavier, less-visited screens load on demand so the first open stays fast.
@@ -38,6 +39,7 @@ export default function App() {
   const { pathname } = useLocation()
   const settings = useLiveQuery(() => repositories.settings.get())
   const onboarded = Boolean(settings?.onboardingCompleted)
+  useNotificationNavigation()
 
   // Ask once, quietly, that the browser keep our data when space is tight.
   useEffect(() => {

@@ -11,6 +11,7 @@ import {
   LATE_WINDOW_MINUTES,
   LIMITS_NOTE,
   mergeReminders,
+  reminderPath,
   type ReminderMemory,
 } from './reminders.ts'
 
@@ -139,5 +140,19 @@ describe('notification support wording', () => {
     expect(describeSupport({ supported: true, permission: 'denied' })).toMatch(/blocked/i)
     expect(LIMITS_NOTE).toMatch(/may not run a web app in the background/i)
     expect(LIMITS_NOTE).toMatch(/alarm in your Clock app/i)
+  })
+})
+
+describe('reminderPath', () => {
+  it('sends each reminder to the screen where the thing is done', () => {
+    expect(reminderPath('gym')).toBe('/gym')
+    expect(reminderPath('run')).toBe('/run')
+    for (const type of ['meal', 'water', 'supplement', 'review'] as const)
+      expect(reminderPath(type)).toBe('/nutrition')
+  })
+
+  it('has a real destination for every starting reminder', () => {
+    for (const r of DEFAULT_REMINDERS)
+      expect(reminderPath(r.type)).toMatch(/^\/(gym|run|nutrition)$/)
   })
 })

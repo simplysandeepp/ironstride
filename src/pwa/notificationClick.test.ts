@@ -4,7 +4,9 @@ import script from '../../public/notification-click.js?raw'
 type Listener = (event: unknown) => void
 
 /** Runs the real service-worker script against a fake worker scope. */
-function load(windows: { focus: ReturnType<typeof vi.fn> }[]) {
+function load(
+  windows: { focus: ReturnType<typeof vi.fn>; postMessage?: ReturnType<typeof vi.fn> }[],
+) {
   const listeners: Record<string, Listener> = {}
   const scope = {
     addEventListener: (type: string, fn: Listener) => (listeners[type] = fn),
@@ -28,19 +30,21 @@ function load(windows: { focus: ReturnType<typeof vi.fn> }[]) {
 }
 
 describe('notification tap', () => {
-  it('closes the notification and brings the open app forward without reloading it', async () => {
+  it('closes the notification, brings the open app forward and tells it where to go', async () => {
     const focus = vi.fn().mockResolvedValue(undefined)
-    const { scope, click } = load([{ focus }])
-    const n = await click({ url: '/' })
+    const postMessage = vi.fn()
+    const { scope, click } = load([{ focus, postMessage }])
+    const n = await click({ url: '/run' })
     expect(n.close).toHaveBeenCalled()
     expect(focus).toHaveBeenCalled()
+    expect(postMessage).toHaveBeenCalledWith({ type: 'open-path', path: '/run' })
     expect(scope.clients.openWindow).not.toHaveBeenCalled()
   })
 
-  it('opens the app when it is not running', async () => {
+  it('opens the app straight on that screen when it is not running', async () => {
     const { scope, click } = load([])
-    await click({ url: '/' })
-    expect(scope.clients.openWindow).toHaveBeenCalledWith('/')
+    await click({ url: '/nutrition' })
+    expect(scope.clients.openWindow).toHaveBeenCalledWith('/nutrition')
   })
 
   it('opens the start page when the notification carries no address', async () => {
