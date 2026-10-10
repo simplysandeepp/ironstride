@@ -171,6 +171,8 @@ export type AppSettings = {
   dismissedCalorieSuggestion?: string
   /** ISO time of the last JSON backup export. */
   lastBackupAt?: string
+  /** Set once existing protein-powder ticks have been added to the food log. */
+  proteinPowderLinked?: boolean
   /** Automatic backup to a chosen folder (or a daily reminder where folders are unsupported). */
   autoBackupEnabled?: boolean
   autoBackupFolderName?: string

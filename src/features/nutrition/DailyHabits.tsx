@@ -99,7 +99,10 @@ export function DailyHabits({ date }: { date: DateKey }) {
               </select>
             </div>
           ))}
-        <p className="helper">Supplements do not replace food.</p>
+        <p className="helper">
+          Supplements do not replace food. Ticking protein powder also adds its protein to your food
+          log (as a post-workout item you can edit), so your protein totals and charts include it.
+        </p>
         <button type="button" onClick={() => setManaging(!managing)} aria-expanded={managing}>
           {managing ? 'Done' : 'Manage supplements and water'}
         </button>

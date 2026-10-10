@@ -44,6 +44,11 @@ export function FuelDetail({ data }: { data: DashboardData }) {
   const creatine = supplementLogs.some((l) => l.supplement === 'creatine')
     ? getSupplementAdherence(supplementLogs, 'creatine', today, trackingStart)
     : null
+  const creatineTakenDays = new Set(
+    supplementLogs
+      .filter((l) => l.supplement === 'creatine' && l.status === 'taken')
+      .map((l) => l.date),
+  ).size
   const weight = getWeightProgress(bodyMeasurements, {
     minKg: profile.targetWeightMinKg,
     maxKg: profile.targetWeightMaxKg,
@@ -67,8 +72,16 @@ export function FuelDetail({ data }: { data: DashboardData }) {
     },
     {
       label: 'Creatine',
-      value: creatine ? `${creatine.taken} of ${creatine.windowDays} days` : '—',
-      hint: creatine ? undefined : 'Shows once you have logged it',
+      value: creatine
+        ? `${creatine.taken} of ${creatine.windowDays} days`
+        : creatineTakenDays > 0
+          ? `${creatineTakenDays} day${creatineTakenDays === 1 ? '' : 's'} logged`
+          : '—',
+      hint: creatine
+        ? undefined
+        : creatineTakenDays > 0
+          ? 'A percentage shows after 3 days'
+          : 'Shows once you have logged it',
     },
     {
       label: 'Water goal',
