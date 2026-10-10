@@ -3,6 +3,8 @@ import { daysBetween, type DateKey } from '../domain/dates.ts'
 export type LinePoint = { date: DateKey; value: number; avg?: number }
 
 type Props = {
+  /** How axis numbers are written, such as 6:12 for a pace. */
+  format?: (value: number) => string
   tone?: 'run' | 'gym' | 'nutrition' | 'body'
   points: readonly LinePoint[]
   /** Optional target range drawn as a band, separate from the real data. */
@@ -17,7 +19,7 @@ const H = 170
 const PAD = { top: 12, bottom: 24, left: 34, right: 10 }
 
 /** Actual entries are dots; the rolling average is a line. Nothing is interpolated between entries. */
-export function LineChart({ points, band, title, unit, summary, tone }: Props) {
+export function LineChart({ points, band, title, unit, summary, tone, format = String }: Props) {
   if (points.length === 0) {
     return <p className="helper">{summary}</p>
   }
@@ -57,10 +59,10 @@ export function LineChart({ points, band, title, unit, summary, tone }: Props) {
           textAnchor="end"
           dominantBaseline="hanging"
         >
-          {hi}
+          {format(hi)}
         </text>
         <text className="chart-label" x={PAD.left - 4} y={y(lo)} textAnchor="end">
-          {lo}
+          {format(lo)}
         </text>
         {avgPoints.length > 1 && (
           <polyline

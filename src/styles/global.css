@@ -1132,3 +1132,146 @@ html {
   text-align: right;
   color: var(--text-secondary);
 }
+
+/* ───────── Dashboard detail: gauge, stacked bar, stat list ───────── */
+
+.gauge-track {
+  position: relative;
+  display: flex;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.gauge-zone {
+  min-width: 0;
+}
+.gauge-zone[data-zone='lighter'] {
+  background: color-mix(in srgb, var(--run) 55%, var(--surface-raised));
+}
+.gauge-zone[data-zone='steady'] {
+  background: color-mix(in srgb, var(--success) 70%, var(--surface-raised));
+}
+.gauge-zone[data-zone='building'] {
+  background: color-mix(in srgb, var(--gold) 75%, var(--surface-raised));
+}
+.gauge-zone[data-zone='spike'] {
+  background: color-mix(in srgb, var(--accent) 80%, var(--surface-raised));
+}
+
+.gauge-marker {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 4px;
+  margin-left: -2px;
+  background: var(--text);
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px var(--surface);
+  transition: left 700ms var(--ease);
+}
+
+.gauge-labels {
+  display: flex;
+  margin: 6px 0 var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.gauge-labels span {
+  min-width: 0;
+  text-align: center;
+}
+
+.stacked-track {
+  display: flex;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  gap: 2px;
+}
+
+.stacked-track span,
+.swatch {
+  background: var(--domain);
+}
+
+.stacked-track span {
+  min-width: 0;
+  transition: flex-grow 700ms var(--ease);
+}
+
+[data-tone='run'] {
+  --tone-color: var(--run);
+}
+[data-tone='gym'] {
+  --tone-color: var(--gym);
+}
+[data-tone='nutrition'] {
+  --tone-color: var(--nutrition);
+}
+[data-tone='body'] {
+  --tone-color: var(--body);
+}
+[data-tone='muted'] {
+  --tone-color: var(--text-muted);
+}
+
+.stacked-track span[data-tone],
+.swatch[data-tone] {
+  background: var(--tone-color);
+}
+
+.stacked-legend {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 3px;
+}
+
+.stats {
+  margin: 0;
+  display: grid;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: var(--text-sm);
+}
+
+.stat:last-child {
+  border-bottom: 0;
+}
+
+.stat dt {
+  color: var(--text-secondary);
+}
+
+.stat dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.stat-hint {
+  display: block;
+  margin: 0;
+  font-size: var(--text-xs);
+}
