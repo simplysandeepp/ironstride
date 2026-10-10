@@ -419,3 +419,17 @@ progress {
   height: 8px;
   accent-color: var(--accent);
 }
+
+.chart-band {
+  fill: var(--gold);
+  opacity: 0.15;
+}
+
+.chart-line {
+  stroke: var(--gold);
+  stroke-width: 2;
+}
+
+.chart-dot {
+  fill: var(--run);
+}

@@ -8,6 +8,7 @@ import { db } from '../../db/database.ts'
 import { repositories } from '../../db/repositories.ts'
 import { addDays, formatDateLong, getLocalDateKey } from '../../domain/dates.ts'
 import { calculateDailyNutrition, getRemaining } from '../../domain/nutrition.ts'
+import { BodyWeight } from './BodyWeight.tsx'
 import { DailyHabits } from './DailyHabits.tsx'
 import { addCopy, toggleFavourite } from './foodActions.ts'
 import { getRecentFoods, MEALS, mealLabel } from './foodForm.ts'
@@ -218,6 +219,7 @@ export function NutritionScreen() {
       </section>
 
       <DailyHabits date={date} />
+      <BodyWeight date={date} />
 
       {deleting && (
         <ConfirmDialog
