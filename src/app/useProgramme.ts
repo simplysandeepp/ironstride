@@ -4,11 +4,15 @@ import { db } from '../db/database.ts'
 import { repositories } from '../db/repositories.ts'
 import { applyOverrides, scaleProgrammeToBaseline } from '../domain/planner.ts'
 import type { Programme } from '../domain/programme.ts'
-import type { UserProfile } from '../domain/types.ts'
+import type { PlannedWorkoutOverride, UserProfile } from '../domain/types.ts'
 
 export type ProgrammeData = {
   profile: UserProfile
+  /** The plan in use: scaled to the user's base, with their edits applied. */
   programme: Programme
+  /** The scaled plan before the user's edits, to show what a reset returns to. */
+  basePlan: Programme
+  overrides: PlannedWorkoutOverride[]
 }
 
 /**
@@ -25,6 +29,6 @@ export function useProgramme(): ProgrammeData | null | undefined {
       profile.weeklyRunBaselineKm,
       profile.recentLongRunKm,
     )
-    return { profile, programme: applyOverrides(scaled, overrides) }
+    return { profile, programme: applyOverrides(scaled, overrides), basePlan: scaled, overrides }
   })
 }

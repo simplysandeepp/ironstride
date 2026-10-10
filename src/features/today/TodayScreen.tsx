@@ -121,6 +121,10 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
         </section>
       )}
 
+      <Link className="button-link" to="/plan">
+        See the full 26-week plan
+      </Link>
+
       <section className="card streaks" aria-label="Streaks">
         <div>
           <span className="metric">{model.gymStreak.current}</span>

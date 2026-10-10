@@ -10,6 +10,7 @@ import { GymScreen } from './features/gym/GymScreen.tsx'
 import { SessionScreen } from './features/gym/SessionScreen.tsx'
 import { FoodFormScreen } from './features/nutrition/FoodFormScreen.tsx'
 import { NutritionScreen } from './features/nutrition/NutritionScreen.tsx'
+import { PlanScreen } from './features/plan/PlanScreen.tsx'
 import { ProgressScreen } from './features/progress/ProgressScreen.tsx'
 import { RunLogScreen } from './features/run/RunLogScreen.tsx'
 import { RunScreen } from './features/run/RunScreen.tsx'
@@ -30,13 +31,15 @@ export default function App() {
   const title =
     pathname === '/settings'
       ? 'Settings'
-      : pathname.startsWith('/gym/session')
-        ? 'Workout'
-        : pathname === '/run/log'
-          ? 'Log run'
-          : pathname === '/nutrition/food'
-            ? 'Add food'
-            : (NAV_ITEMS.find((item) => item.path === pathname)?.label ?? 'IronStride')
+      : pathname === '/plan'
+        ? 'Full plan'
+        : pathname.startsWith('/gym/session')
+          ? 'Workout'
+          : pathname === '/run/log'
+            ? 'Log run'
+            : pathname === '/nutrition/food'
+              ? 'Add food'
+              : (NAV_ITEMS.find((item) => item.path === pathname)?.label ?? 'IronStride')
 
   return (
     <div className="app-shell">
@@ -54,6 +57,7 @@ export default function App() {
           <Route path="/nutrition" element={<NutritionScreen />} />
           <Route path="/nutrition/food" element={<FoodFormScreen />} />
           <Route path="/progress" element={<ProgressScreen />} />
+          <Route path="/plan" element={<PlanScreen />} />
           <Route path="/settings" element={<SettingsScreen />} />
           <Route path="*" element={<TodayScreen />} />
         </Routes>

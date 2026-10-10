@@ -100,3 +100,23 @@ export function formatDateLong(key: DateKey): string {
     timeZone: 'UTC',
   }).format(toUtcDate(key))
 }
+
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
+
+/** "12 Oct" for a date key. */
+export function formatDayMonth(key: DateKey): string {
+  return `${Number(key.slice(8))} ${MONTH_NAMES[Number(key.slice(5, 7)) - 1]}`
+}
