@@ -133,6 +133,8 @@ export type WaterEntry = {
   id: string
   date: DateKey
   amountMl: number
+  /** ISO time the entry was added; used to undo the most recent one. */
+  createdAt?: string
 }
 
 export type Reminder = {

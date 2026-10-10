@@ -44,13 +44,16 @@ export async function setSupplementStatus(
   })
 }
 
-export const addWater = (date: DateKey, amountMl: number) =>
-  repositories.waterEntries.save({ id: newId(), date, amountMl })
+export const addWater = (date: DateKey, amountMl: number, now: Date = new Date()) =>
+  repositories.waterEntries.save({ id: newId(), date, amountMl, createdAt: now.toISOString() })
 
 /** Removes the most recently added water entry for the date, if any. */
 export async function undoLastWater(date: DateKey) {
   const entries = await repositories.waterEntries.onDate(date)
-  const last = entries.at(-1)
+  // Database order follows the random id, so pick the newest by its timestamp.
+  const last = [...entries]
+    .sort((a, b) => (a.createdAt ?? '').localeCompare(b.createdAt ?? ''))
+    .at(-1)
   if (last) await repositories.waterEntries.remove(last.id)
 }
 

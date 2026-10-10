@@ -61,9 +61,9 @@ describe('supplement logging', () => {
 })
 
 describe('water', () => {
-  it('adds entries and undoes only the latest one', async () => {
-    await addWater(D, 250)
-    await addWater(D, 500)
+  it('undoes the newest entry regardless of storage order', async () => {
+    await addWater(D, 250, new Date('2026-10-12T08:00:00Z'))
+    await addWater(D, 500, new Date('2026-10-12T09:00:00Z'))
     expect((await repositories.waterEntries.onDate(D)).reduce((s, w) => s + w.amountMl, 0)).toBe(
       750,
     )
