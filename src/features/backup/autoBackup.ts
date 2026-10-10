@@ -35,6 +35,8 @@ export type AutoBackupDeps = {
 export type AutoBackupOptions = {
   /** "Back up now": ignore the recent-run limit and allow replacing a larger backup. */
   force?: boolean
+  /** Used when the app opens: back up even if one ran moments ago. */
+  ignoreRecent?: boolean
   /** Only true when called from a tap, because the browser asks for folder access on a gesture. */
   requestPermission?: boolean
 }
@@ -57,7 +59,7 @@ export async function runAutoBackup(
   if (!handle) return 'no-folder'
 
   const now = deps.now()
-  if (!options.force && settings.lastAutoBackupAt) {
+  if (!options.force && !options.ignoreRecent && settings.lastAutoBackupAt) {
     if (now.getTime() - new Date(settings.lastAutoBackupAt).getTime() < MIN_INTERVAL_MS)
       return 'skipped-recent'
   }

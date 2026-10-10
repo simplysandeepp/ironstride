@@ -19,11 +19,12 @@ export function useAutoBackup(active: boolean) {
   useEffect(() => {
     if (!active) return
     let cancelled = false
-    const check = async () => {
-      const result = await runAutoBackup(realAutoBackupDeps())
+    const check = async (options?: AutoBackupOptions) => {
+      const result = await runAutoBackup(realAutoBackupDeps(), options)
       if (!cancelled) setStatus(result)
     }
-    void check()
+    // Every open backs up, however recently the last one ran; leaving the app is rate-limited.
+    void check({ ignoreRecent: true })
     const onVisibility = () => {
       if (document.visibilityState === 'hidden') void check()
     }

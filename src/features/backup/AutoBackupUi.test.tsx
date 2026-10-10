@@ -191,6 +191,21 @@ describe('AutoBackupBanner', () => {
     expect(JSON.parse(folder.files.get(BACKUP_FILE)!).data.runLogs).toHaveLength(2)
   })
 
+  it('backs up on open even when the last backup was seconds ago', async () => {
+    await seedRun()
+    const folder = createFakeFolder()
+    store.handle = folder
+    pickerReturns(folder)
+    await repositories.settings.save({
+      ...DEFAULT_SETTINGS,
+      autoBackupEnabled: true,
+      autoBackupFolderName: folder.name,
+      lastAutoBackupAt: new Date(Date.now() - 5_000).toISOString(),
+    })
+    renderBanner()
+    await waitFor(() => expect(folder.files.has(BACKUP_FILE)).toBe(true))
+  })
+
   it('asks for one tap when the browser has revoked folder access, then saves', async () => {
     await seedRun()
     const folder = createFakeFolder('IronStride Backup', 'prompt')

@@ -80,6 +80,14 @@ describe('runAutoBackup', () => {
     expect(await runAutoBackup(setup({ settings: { lastAutoBackupAt: stale } }).deps)).toBe('done')
   })
 
+  it('backs up on every open even if one ran moments ago, but not when only leaving the app', async () => {
+    const justNow = new Date(NOW.getTime() - 5_000).toISOString()
+    const { deps, folder } = setup({ settings: { lastAutoBackupAt: justNow } })
+    expect(await runAutoBackup(deps)).toBe('skipped-recent')
+    expect(await runAutoBackup(deps, { ignoreRecent: true })).toBe('done')
+    expect(folder!.files.size).toBeGreaterThan(0)
+  })
+
   it('reports when the browser needs a tap to allow the folder again, and writes nothing', async () => {
     const { deps, folder } = setup({ folder: createFakeFolder('x', 'prompt') })
     expect(await runAutoBackup(deps)).toBe('needs-permission')

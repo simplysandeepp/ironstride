@@ -4,7 +4,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { setSwState } from '../pwa/swState.ts'
 import { UpdatePrompt } from './UpdatePrompt.tsx'
 
-afterEach(() => act(() => setSwState({ needRefresh: false, applyUpdate: undefined })))
+afterEach(() =>
+  act(() => setSwState({ needRefresh: false, autoUpdating: false, applyUpdate: undefined })),
+)
 
 describe('UpdatePrompt', () => {
   it('stays hidden until an update is waiting', () => {
@@ -37,5 +39,18 @@ describe('UpdatePrompt', () => {
     expect(await screen.findByRole('button', { name: 'Refresh now' })).toBeEnabled()
     await userEvent.click(screen.getByRole('button', { name: 'Refresh now' }))
     expect(apply).toHaveBeenCalledTimes(2)
+  })
+
+  it('says it is updating while a safe automatic update is applied, with nothing to tap', () => {
+    render(<UpdatePrompt />)
+    act(() => setSwState({ autoUpdating: true }))
+    expect(screen.getByRole('status')).toHaveTextContent(/updating ironstride/i)
+    expect(screen.queryByRole('button')).toBeNull()
+  })
+
+  it('still shows the tap-to-refresh banner when an update could not be applied automatically', () => {
+    render(<UpdatePrompt />)
+    act(() => setSwState({ needRefresh: true, autoUpdating: false, applyUpdate: vi.fn() }))
+    expect(screen.getByRole('button', { name: 'Refresh now' })).toBeInTheDocument()
   })
 })
