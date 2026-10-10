@@ -1,4 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
+import { lazy, Suspense } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { NAV_ITEMS } from './app/navigation.ts'
 import { BottomNavigation } from './components/BottomNavigation.tsx'
@@ -10,15 +11,23 @@ import { GymScreen } from './features/gym/GymScreen.tsx'
 import { SessionScreen } from './features/gym/SessionScreen.tsx'
 import { FoodFormScreen } from './features/nutrition/FoodFormScreen.tsx'
 import { NutritionScreen } from './features/nutrition/NutritionScreen.tsx'
-import { PlanScreen } from './features/plan/PlanScreen.tsx'
-import { ProgressScreen } from './features/progress/ProgressScreen.tsx'
 import { RunLogScreen } from './features/run/RunLogScreen.tsx'
 import { RunScreen } from './features/run/RunScreen.tsx'
 import { ReminderBanner } from './features/reminders/ReminderBanner.tsx'
 import { OnboardingScreen } from './features/settings/OnboardingScreen.tsx'
 import { TodayScreen } from './features/today/TodayScreen.tsx'
-import { SettingsScreen } from './features/settings/SettingsScreen.tsx'
 import { useTheme } from './hooks/useTheme.ts'
+
+// Heavier, less-visited screens load on demand so the first open stays fast.
+const PlanScreen = lazy(() =>
+  import('./features/plan/PlanScreen.tsx').then((m) => ({ default: m.PlanScreen })),
+)
+const ProgressScreen = lazy(() =>
+  import('./features/progress/ProgressScreen.tsx').then((m) => ({ default: m.ProgressScreen })),
+)
+const SettingsScreen = lazy(() =>
+  import('./features/settings/SettingsScreen.tsx').then((m) => ({ default: m.SettingsScreen })),
+)
 
 export default function App() {
   const { theme, cycleTheme } = useTheme()
@@ -48,19 +57,21 @@ export default function App() {
       <UpdatePrompt />
       <ReminderBanner />
       <main className="page-body">
-        <Routes>
-          <Route path="/" element={<TodayScreen />} />
-          <Route path="/gym" element={<GymScreen />} />
-          <Route path="/gym/session/:id" element={<SessionScreen />} />
-          <Route path="/run" element={<RunScreen />} />
-          <Route path="/run/log" element={<RunLogScreen />} />
-          <Route path="/nutrition" element={<NutritionScreen />} />
-          <Route path="/nutrition/food" element={<FoodFormScreen />} />
-          <Route path="/progress" element={<ProgressScreen />} />
-          <Route path="/plan" element={<PlanScreen />} />
-          <Route path="/settings" element={<SettingsScreen />} />
-          <Route path="*" element={<TodayScreen />} />
-        </Routes>
+        <Suspense fallback={<p className="helper">Loading…</p>}>
+          <Routes>
+            <Route path="/" element={<TodayScreen />} />
+            <Route path="/gym" element={<GymScreen />} />
+            <Route path="/gym/session/:id" element={<SessionScreen />} />
+            <Route path="/run" element={<RunScreen />} />
+            <Route path="/run/log" element={<RunLogScreen />} />
+            <Route path="/nutrition" element={<NutritionScreen />} />
+            <Route path="/nutrition/food" element={<FoodFormScreen />} />
+            <Route path="/progress" element={<ProgressScreen />} />
+            <Route path="/plan" element={<PlanScreen />} />
+            <Route path="/settings" element={<SettingsScreen />} />
+            <Route path="*" element={<TodayScreen />} />
+          </Routes>
+        </Suspense>
       </main>
       <BottomNavigation />
     </div>

@@ -5,9 +5,12 @@
   --surface-elevated: #1c2229;
   --text: #f2f0eb;
   --text-secondary: #9aa3ad;
-  --text-muted: #6f7882;
+  --text-muted: #8a939d;
   --border: #2a323b;
   --accent: #e5383b;
+  /* Fill behind white text, and red used as text: both pass WCAG AA contrast on every surface. */
+  --accent-fill: #d62f32;
+  --accent-text: #ff5a5d;
   --accent-contrast: #ffffff;
   --gold: #f2b134;
   --run: #4ea8de;
@@ -55,9 +58,11 @@
   --surface-elevated: #efece5;
   --text: #14181d;
   --text-secondary: #4a525b;
-  --text-muted: #6b737c;
+  --text-muted: #5f6770;
   --border: #d9d5cc;
   --accent: #c8282b;
+  --accent-fill: #c8282b;
+  --accent-text: #c8282b;
   --run: #1f6fa8;
   --strength: #9a6b00;
   --gold: #9a6b00;
@@ -80,9 +85,11 @@
     --surface-elevated: #efece5;
     --text: #14181d;
     --text-secondary: #4a525b;
-    --text-muted: #6b737c;
+    --text-muted: #5f6770;
     --border: #d9d5cc;
     --accent: #c8282b;
+    --accent-fill: #c8282b;
+    --accent-text: #c8282b;
     --run: #1f6fa8;
     --strength: #9a6b00;
     --gold: #9a6b00;
