@@ -18,8 +18,10 @@ export function getPlanAdherence(
   completed: readonly CompletedSession[],
   today: DateKey,
   days = 28,
+  /** Ignore anything before this date, such as the day the first session was logged. */
+  since?: DateKey,
 ): AdherenceResult {
-  const from = addDays(today, -(days - 1))
+  const from = since && since > addDays(today, -(days - 1)) ? since : addDays(today, -(days - 1))
   const inWindow = planned.filter((p) => p.date >= from && p.date <= today)
   const done = inWindow.filter((p) => isPlannedSessionDone(p, completed))
   const due = inWindow.filter((p) => p.date < today || isPlannedSessionDone(p, completed)).length
@@ -50,8 +52,10 @@ export function getMissedPatterns(
   completedRuns: readonly CompletedSession[],
   today: DateKey,
   weeks = 6,
+  since?: DateKey,
 ): MissedPattern[] {
-  const from = addDays(today, -(weeks * 7 - 1))
+  const windowStart = addDays(today, -(weeks * 7 - 1))
+  const from = since && since > windowStart ? since : windowStart
   const groups = new Map<string, MissedPattern>()
   for (const workout of programme.weeks.flatMap((w) => w.workouts)) {
     const gym = isGymWorkout(workout)

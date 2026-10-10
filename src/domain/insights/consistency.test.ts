@@ -32,6 +32,24 @@ describe('getPlanAdherence', () => {
   })
 })
 
+describe('judging only from when logging began', () => {
+  it('does not count sessions before the first logged one', () => {
+    // Everything before Thursday 15 Oct is ignored: only Thu 15 and Sat 17 are due.
+    expect(getPlanAdherence(runs, [done(runs[2])], '2026-10-18', 28, '2026-10-15')).toEqual({
+      due: 2,
+      done: 1,
+      share: null,
+    })
+    expect(getPlanAdherence(runs, [], '2026-10-18', 28)).toMatchObject({ due: 4 })
+  })
+
+  it('also limits missed patterns to the period since logging began', () => {
+    expect(
+      getMissedPatterns(DEFAULT_PROGRAMME, START, [], [], '2026-11-09', 6, '2026-11-09'),
+    ).toEqual([])
+  })
+})
+
 describe('getMissedPatterns', () => {
   const today = '2026-11-09' // end of week 4 plus a day
 
