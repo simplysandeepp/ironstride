@@ -103,3 +103,35 @@ describe('getLoadWarning', () => {
     expect(getLoadWarning(30, 0)).toBeUndefined()
   })
 })
+
+import { getWeeklyRunSummaries } from './running.ts'
+
+describe('getWeeklyRunSummaries', () => {
+  const run = (date: string, km: number, completed = true): RunLog => ({
+    id: date + km,
+    date,
+    type: 'easy',
+    actualDistanceKm: km,
+    completed,
+  })
+
+  it('returns oldest-first weeks ending with the current one, with zeros for empty weeks', () => {
+    const out = getWeeklyRunSummaries(
+      [
+        run('2026-10-06', 5),
+        run('2026-10-10', 10),
+        run('2026-10-12', 6),
+        run('2026-10-13', 4, false),
+      ],
+      '2026-10-14',
+      3,
+    )
+    expect(out.map((w) => w.weekStart)).toEqual(['2026-09-28', '2026-10-05', '2026-10-12'])
+    expect(out.map((w) => w.km)).toEqual([0, 15, 6])
+    expect(out.map((w) => w.longestRunKm)).toEqual([0, 10, 6])
+  })
+
+  it('handles no data', () => {
+    expect(getWeeklyRunSummaries([], '2026-10-14', 2).every((w) => w.km === 0)).toBe(true)
+  })
+})

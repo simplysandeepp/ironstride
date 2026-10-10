@@ -102,4 +102,29 @@ describe('run flow', () => {
     )
     expect(await repositories.runLogs.all()).toHaveLength(1)
   })
+
+  it('shows run history, a chart summary, and deletes only after confirmation', async () => {
+    await repositories.runLogs.save({
+      id: 'h1',
+      date: START,
+      type: 'long',
+      actualDistanceKm: 8,
+      durationSeconds: 3000,
+      averagePaceSecondsPerKm: 375,
+      completed: true,
+    })
+    renderRun()
+    expect(await screen.findByText(/8 km · long run/i)).toBeInTheDocument()
+    expect(screen.getByText(/6:15 \/km/)).toBeInTheDocument()
+    expect(screen.getByText(/longest run 8 km/i)).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /delete run on/i }))
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(await repositories.runLogs.all()).toHaveLength(1)
+
+    await userEvent.click(screen.getByRole('button', { name: /delete run on/i }))
+    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    await waitFor(async () => expect(await repositories.runLogs.all()).toHaveLength(0))
+    expect(await screen.findByText(/completed runs will appear here/i)).toBeInTheDocument()
+  })
 })
