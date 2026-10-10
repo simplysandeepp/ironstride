@@ -312,6 +312,7 @@ button:disabled {
   font-size: var(--text-sm);
 }
 
+input.set-check,
 .set-row input[type='checkbox'] {
   width: 28px;
   height: 28px;
@@ -528,4 +529,61 @@ progress {
 
 .heatmap-legend .hm-cell {
   display: inline-block;
+}
+
+/* Mobile containment: nothing may be wider than the screen. Only the heatmap scrolls sideways. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.app-shell,
+.page-body,
+.stack,
+.stack > *,
+.card,
+.field,
+.form {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.streaks {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.streak-help {
+  grid-column: 1 / -1;
+}
+
+input,
+select {
+  width: 100%;
+  min-width: 0;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  width: auto;
+}
+
+.heatmap-scroll {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.heatmap-legend {
+  flex-wrap: wrap;
+}
+
+.helper,
+.task,
+.card h2 {
+  overflow-wrap: anywhere;
+}
+
+.heatmap {
+  padding: 3px;
 }

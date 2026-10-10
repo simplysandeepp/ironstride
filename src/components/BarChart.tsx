@@ -14,6 +14,10 @@ const PAD = { top: 18, bottom: 26, left: 8, right: 8 }
 
 /** Simple SVG bar chart. Empty data shows a hint instead of an empty frame. */
 export function BarChart({ data, unit, summary, title }: Props) {
+  // Nothing to plot: show the explanation only, not an empty frame.
+  if (data.every((d) => d.value === 0 && !d.marker)) {
+    return <p className="helper">{summary}</p>
+  }
   const max = Math.max(1, ...data.map((d) => Math.max(d.value, d.marker ?? 0)))
   const plotH = HEIGHT - PAD.top - PAD.bottom
   const slot = (WIDTH - PAD.left - PAD.right) / Math.max(1, data.length)
