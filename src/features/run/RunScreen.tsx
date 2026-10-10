@@ -108,6 +108,10 @@ export function RunScreen({ today = getLocalDateKey() }: { today?: DateKey }) {
         </EmptyState>
       )}
 
+      <Link className="button-link" to="/plan">
+        See the full 26-week plan
+      </Link>
+
       <section className="card" aria-labelledby="chart-heading">
         <h2 id="chart-heading">Weekly distance</h2>
         <BarChart

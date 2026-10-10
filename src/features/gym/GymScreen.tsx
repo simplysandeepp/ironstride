@@ -100,6 +100,10 @@ export function GymScreen({ today = getLocalDateKey() }: Props) {
         </ul>
       </section>
 
+      <Link className="button-link" to="/plan">
+        See the full 26-week plan
+      </Link>
+
       <section className="card" aria-labelledby="history-heading">
         <h2 id="history-heading">Recent workouts</h2>
         {recent.length === 0 ? (

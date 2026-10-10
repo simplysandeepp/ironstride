@@ -637,3 +637,54 @@ input[type='radio'] {
   border-top: 1px solid var(--border);
   padding-top: var(--space-2);
 }
+
+.week summary {
+  cursor: pointer;
+  min-height: var(--tap-min);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.week-sub {
+  flex-basis: 100%;
+}
+
+.week-current {
+  border-color: var(--accent);
+}
+
+.plan-day {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.plan-edit {
+  margin-top: var(--space-2);
+}
+
+.week summary {
+  list-style: none;
+}
+
+.week summary::-webkit-details-marker {
+  display: none;
+}
+
+.week summary::after {
+  content: '▾';
+  margin-left: auto;
+  color: var(--text-secondary);
+}
+
+.week[open] > summary::after {
+  content: '▴';
+}
