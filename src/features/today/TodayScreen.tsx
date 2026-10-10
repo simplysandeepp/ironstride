@@ -180,6 +180,9 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
               {s.label} ({s.amount} {s.unit})
             </label>
           ))}
+        <p className="helper">
+          Ticking protein powder also adds its protein to today&apos;s food log.
+        </p>
         <p>
           Water: <span className="metric-inline">{waterMl}</span> / {getWaterTarget(data.settings)}{' '}
           ml

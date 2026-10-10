@@ -169,3 +169,31 @@ describe('Fuel tab detail with real logs', () => {
     expect(within(body).getByText(/weight gain is not all muscle/i)).toBeInTheDocument()
   })
 })
+
+describe('Fuel tab creatine and protein powder', () => {
+  it('shows creatine from the very first day, with a percentage once there are 3 days', async () => {
+    await repositories.supplementLogs.save({
+      id: `${TODAY}-creatine`,
+      date: TODAY,
+      supplement: 'creatine',
+      amount: 3,
+      unit: 'g',
+      status: 'taken',
+    })
+    renderFuel()
+    const consistency = await card('Consistency')
+    expect(within(consistency).getByText('Creatine').closest('.stat')).toHaveTextContent(
+      '1 day logged',
+    )
+    expect(within(consistency).getByText(/a percentage shows after 3 days/i)).toBeInTheDocument()
+  })
+
+  it('counts the protein from a ticked scoop in the protein numbers', async () => {
+    await repositories.foodEntries.save(
+      food(TODAY, 120, 24, { id: 'supp-protein-powder-2026-10-31', meal: 'post-workout' }),
+    )
+    renderFuel()
+    const protein = await card('Protein, last 7 days')
+    expect(within(protein).getByText(/post-workout/i)).toBeInTheDocument()
+  })
+})

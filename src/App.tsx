@@ -19,6 +19,7 @@ import { ReminderBanner } from './features/reminders/ReminderBanner.tsx'
 import { OnboardingScreen } from './features/settings/OnboardingScreen.tsx'
 import { TodayScreen } from './features/today/TodayScreen.tsx'
 import { useTheme } from './hooks/useTheme.ts'
+import { backfillProteinPowderFood } from './features/nutrition/habits.ts'
 import { requestPersistentStorage } from './pwa/storage.ts'
 
 // Heavier, less-visited screens load on demand so the first open stays fast.
@@ -40,7 +41,10 @@ export default function App() {
 
   // Ask once, quietly, that the browser keep our data when space is tight.
   useEffect(() => {
-    if (onboarded) void requestPersistentStorage()
+    if (onboarded) {
+      void requestPersistentStorage()
+      void backfillProteinPowderFood()
+    }
   }, [onboarded])
 
   if (!settings) return null // first read of local storage; avoids flashing onboarding
