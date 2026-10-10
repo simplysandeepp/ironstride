@@ -68,3 +68,27 @@ describe('parseNumberInput', () => {
     expect(parseNumberInput('-5')).toBeUndefined()
   })
 })
+
+import { skipExercise, substituteExercise, unskipExercise, SKIP_REASONS } from './sessionModel.ts'
+
+describe('skip and substitute', () => {
+  const base = createSessionFromWorkout(upperA, '2026-10-12', '2026-10-12T07:00:00Z', id)
+
+  it('records a skip reason, clears completed sets, and can be undone', () => {
+    const logged = updateSet(base, 0, 0, { completed: true, reps: 8 })
+    const skipped = skipExercise(logged, 0, SKIP_REASONS[0])
+    expect(skipped.exercises[0].skippedReason).toBe('Pain or discomfort')
+    expect(skipped.exercises[0].sets.every((s) => !s.completed)).toBe(true)
+    expect(unskipExercise(skipped, 0).exercises[0].skippedReason).toBeUndefined()
+  })
+
+  it('swaps in an equivalent exercise, remembers the original and keeps the set count', () => {
+    const swapped = substituteExercise(base, 0, 'dumbbell-bench-press', id)
+    expect(swapped.exercises[0]).toMatchObject({
+      exerciseId: 'dumbbell-bench-press',
+      substitutedFromId: 'bench-press',
+    })
+    expect(swapped.exercises[0].sets).toHaveLength(base.exercises[0].sets.length)
+    expect(substituteExercise(swapped, 0, 'nope', id)).toBe(swapped)
+  })
+})
