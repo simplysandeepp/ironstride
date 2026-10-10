@@ -5,6 +5,8 @@
 export type SwState = {
   offlineReady: boolean
   needRefresh: boolean
+  /** A new version is being applied automatically right now. */
+  autoUpdating?: boolean
   /** Applies a waiting update and reloads. Set by the registration code. */
   applyUpdate?: () => Promise<void>
 }

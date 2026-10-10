@@ -1,12 +1,24 @@
 import { useState } from 'react'
 import { useSwState } from '../hooks/useSwState.ts'
 
-/** Shown when a new version is waiting. Nothing reloads until the user chooses. */
+/**
+ * New versions normally install themselves when you open the app. This banner covers the other
+ * case: an update that arrived while you were busy, which waits until you choose.
+ */
 export function UpdatePrompt() {
-  const { needRefresh, applyUpdate } = useSwState()
+  const { needRefresh, applyUpdate, autoUpdating } = useSwState()
   const [dismissed, setDismissed] = useState(false)
   const [updating, setUpdating] = useState(false)
 
+  if (autoUpdating) {
+    return (
+      <div className="update-prompt" role="status">
+        <p>
+          <strong>Updating IronStride…</strong> Your logs are not affected.
+        </p>
+      </div>
+    )
+  }
   if (!needRefresh || dismissed || !applyUpdate) return null
 
   async function update() {
