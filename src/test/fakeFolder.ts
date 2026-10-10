@@ -8,6 +8,8 @@ export type FakeFolder = DirHandleLike & {
   /** What requestPermission answers when the user taps Allow. */
   grantOnRequest: boolean
   failWrites: boolean
+  /** How many times the browser was asked to show its permission prompt. */
+  permissionRequests: number
 }
 
 /** An in-memory stand-in for a folder from the browser's file picker. */
@@ -22,10 +24,12 @@ export function createFakeFolder(
     permission,
     grantOnRequest: true,
     failWrites: false,
+    permissionRequests: 0,
     async queryPermission() {
       return folder.permission
     },
     async requestPermission() {
+      folder.permissionRequests += 1
       folder.permission = folder.grantOnRequest ? 'granted' : 'denied'
       return folder.permission
     },

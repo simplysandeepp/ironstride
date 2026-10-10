@@ -59,7 +59,13 @@ export async function runAutoBackup(
   if (!handle) return 'no-folder'
 
   const now = deps.now()
-  if (!options.force && !options.ignoreRecent && settings.lastAutoBackupAt) {
+  // A tap on "Allow backups" must always reach the browser's prompt, however recent the last backup.
+  if (
+    !options.force &&
+    !options.ignoreRecent &&
+    !options.requestPermission &&
+    settings.lastAutoBackupAt
+  ) {
     if (now.getTime() - new Date(settings.lastAutoBackupAt).getTime() < MIN_INTERVAL_MS)
       return 'skipped-recent'
   }
