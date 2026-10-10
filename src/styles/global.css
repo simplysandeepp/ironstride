@@ -1275,3 +1275,86 @@ html {
   margin: 0;
   font-size: var(--text-xs);
 }
+
+/* ───────── Horizontal bars ───────── */
+
+.hbars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.hbars li {
+  display: grid;
+  grid-template-columns: 5.6rem minmax(0, 1fr) 3.6rem;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.hbar-label {
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.hbar-track {
+  position: relative;
+  height: 10px;
+  background: var(--surface-raised);
+  border-radius: 999px;
+}
+
+.hbar-fill {
+  display: block;
+  height: 100%;
+  background: var(--domain);
+  border-radius: 999px;
+  transition: width 700ms var(--ease);
+}
+
+.hbars[data-tone='run'] .hbar-fill {
+  background: var(--run);
+}
+.hbars[data-tone='gym'] .hbar-fill {
+  background: var(--gym);
+}
+.hbars[data-tone='nutrition'] .hbar-fill {
+  background: var(--nutrition);
+}
+.hbars[data-tone='body'] .hbar-fill {
+  background: var(--body);
+}
+
+.hbar-marker {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 3px;
+  margin-left: -1.5px;
+  background: var(--text);
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+.hbar-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 1px 8px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: #0a0c0f;
+  background: var(--success);
+  border-radius: 999px;
+}
+
+.task > .metric-inline {
+  flex: none;
+  white-space: nowrap;
+}
