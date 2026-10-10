@@ -20,8 +20,20 @@ describe('BarChart', () => {
     expect(document.querySelectorAll('rect.bar')).toHaveLength(2)
   })
 
-  it('does not draw values for empty weeks and survives no data', () => {
-    const { container } = render(<BarChart title="t" unit="km" summary="none" data={[]} />)
-    expect(container.querySelectorAll('rect.bar')).toHaveLength(0)
+  it('shows only the explanation when there is nothing to plot', () => {
+    const { container } = render(<BarChart title="t" unit="km" summary="none yet" data={[]} />)
+    expect(container.querySelector('svg')).toBeNull()
+    expect(screen.getByText('none yet')).toBeInTheDocument()
+    const zeros = render(
+      <BarChart title="t" unit="km" summary="all zero" data={[{ label: 'a', value: 0 }]} />,
+    )
+    expect(zeros.container.querySelector('svg')).toBeNull()
+  })
+
+  it('still draws when only a planned marker exists', () => {
+    const { container } = render(
+      <BarChart title="t" unit="km" summary="s" data={[{ label: 'a', value: 0, marker: 3 }]} />,
+    )
+    expect(container.querySelector('svg')).not.toBeNull()
   })
 })
