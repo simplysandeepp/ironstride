@@ -50,3 +50,13 @@ describe('swState store', () => {
     expect(calls).toBe(1)
   })
 })
+
+import { AboutSection } from '../features/settings/AboutSection.tsx'
+
+describe('AboutSection', () => {
+  it('shows the app version and promises updates keep data', () => {
+    render(<AboutSection />)
+    expect(screen.getByText(/ironstride v\d+\.\d+\.\d+/i)).toBeInTheDocument()
+    expect(screen.getByText(/never wiped by an update/i)).toBeInTheDocument()
+  })
+})
