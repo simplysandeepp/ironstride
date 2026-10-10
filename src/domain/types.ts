@@ -169,6 +169,8 @@ export type AppSettings = {
   hideMealIdeas?: boolean
   /** Week start of the calorie suggestion the user dismissed. */
   dismissedCalorieSuggestion?: string
+  /** ISO time of the last JSON backup export. */
+  lastBackupAt?: string
 }
 
 export type ExerciseCategory =
