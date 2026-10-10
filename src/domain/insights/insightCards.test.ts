@@ -140,6 +140,23 @@ describe('running insights', () => {
     expect(find(empty({ runLogs: runs }), 'pace-faster')?.detail).toContain('20 s/km')
   })
 
+  it('does not nag someone who follows a plan that has two quality runs a week', () => {
+    // Week 1-3 of the default plan: about 58% of distance is easy by design.
+    const plan = [
+      run('2026-10-12', 4),
+      run('2026-10-13', 4, { type: 'interval' }),
+      run('2026-10-15', 4, { type: 'tempo' }),
+      run('2026-10-17', 7, { type: 'long' }),
+      run('2026-10-19', 4),
+      run('2026-10-20', 4, { type: 'interval' }),
+      run('2026-10-22', 4.5, { type: 'tempo' }),
+      run('2026-10-24', 8, { type: 'long' }),
+    ]
+    const out = ids(empty({ today: '2026-10-25', runLogs: plan }))
+    expect(out).not.toContain('mix-hard')
+    expect(out).toContain('mix-good')
+  })
+
   it('reports the mix of easy and hard running', () => {
     const hard = [
       run('2026-10-20', 5, { type: 'interval' }),

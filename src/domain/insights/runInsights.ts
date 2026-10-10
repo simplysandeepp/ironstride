@@ -1,4 +1,6 @@
 import { addDays, getWeekStart, type DateKey } from '../dates.ts'
+import { getWorkoutDate } from '../planner.ts'
+import { isRunWorkout, type Programme } from '../programme.ts'
 import type { RunLog, RunType } from '../types.ts'
 
 /** Every function here reads only saved, completed runs and says "not enough data" rather than guessing. */
@@ -224,3 +226,27 @@ export function getIntensityMix(
 
 /** A common endurance guideline is roughly 80% easy running. Used only as a gentle reference. */
 export const EASY_SHARE_REFERENCE = 0.8
+
+/**
+ * The easy share of distance that the plan itself asks for over the same window. A plan with two
+ * quality runs a week is naturally less than 80% easy, so that is the fair thing to compare against.
+ */
+export function getPlannedEasyShare(
+  programme: Programme,
+  startDate: DateKey,
+  today: DateKey,
+  days = 28,
+): number | null {
+  const from = addDays(today, -(days - 1))
+  let easy = 0
+  let hard = 0
+  for (const workout of programme.weeks.flatMap((w) => w.workouts)) {
+    if (!isRunWorkout(workout) || workout.plannedDistanceKm === undefined) continue
+    const date = getWorkoutDate(workout, startDate)
+    if (date < from || date > today || date < startDate) continue
+    if (workout.type === 'interval-run' || workout.type === 'tempo-run')
+      hard += workout.plannedDistanceKm
+    else easy += workout.plannedDistanceKm
+  }
+  return easy + hard > 0 ? round2(easy / (easy + hard)) : null
+}

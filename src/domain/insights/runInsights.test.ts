@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { DEFAULT_PROGRAMME } from '../../data/trainingProgramme.ts'
 import type { RunLog, RunType } from '../types.ts'
 import {
   getEasyEffortTrend,
@@ -7,6 +8,7 @@ import {
   getIntensityMix,
   getLoadRamp,
   getPaceSeries,
+  getPlannedEasyShare,
   getRunBests,
   getRunTotals,
 } from './runInsights.ts'
@@ -227,6 +229,18 @@ describe('effort', () => {
       ),
     ).toEqual({ recent: 5, previous: 3, delta: 2 })
     expect(getEasyEffortTrend([e(3, '2026-10-28')], TODAY)).toBeNull()
+  })
+})
+
+describe('getPlannedEasyShare', () => {
+  it('reports the easy share the plan itself asks for, which is below 80% with two quality runs a week', () => {
+    const share = getPlannedEasyShare(DEFAULT_PROGRAMME, '2026-10-12', '2026-11-08')
+    expect(share).toBeGreaterThan(0.5)
+    expect(share).toBeLessThan(0.7)
+  })
+
+  it('is null before the plan starts', () => {
+    expect(getPlannedEasyShare(DEFAULT_PROGRAMME, '2026-10-12', '2026-10-01')).toBeNull()
   })
 })
 
