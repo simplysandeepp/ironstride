@@ -12,6 +12,7 @@ import {
 } from '../../domain/heatmap.ts'
 import { getPlannedSessions, getPlannedWorkoutsForDate } from '../../domain/planner.ts'
 import { calculateStreak, getWeeklyTargetProgress } from '../../domain/streaks.ts'
+import { ProgressCharts } from './ProgressCharts.tsx'
 import { DaySummary } from './DaySummary.tsx'
 import { Heatmap } from './Heatmap.tsx'
 import { getPlannedRestDays } from './progressModel.ts'
@@ -27,6 +28,7 @@ export function ProgressScreen({ today = getLocalDateKey() }: { today?: DateKey 
   const logs = useLiveQuery(async () => ({
     gym: await db.gymSessions.toArray(),
     runs: await db.runLogs.toArray(),
+    measurements: await db.bodyMeasurements.toArray(),
   }))
   const [filter, setFilter] = useState<HeatmapFilter>('all')
   const [selected, setSelected] = useState<DateKey>(today)
@@ -126,6 +128,19 @@ export function ProgressScreen({ today = getLocalDateKey() }: { today?: DateKey 
         date={selected}
         activities={byDate.get(selected)}
         planned={getPlannedWorkoutsForDate(programme, selected, profile.trainingStartDate)}
+      />
+
+      <ProgressCharts
+        today={today}
+        programme={programme}
+        profile={profile}
+        runs={logs.runs}
+        gymSessions={logs.gym}
+        measurements={logs.measurements}
+        gymPlanned={gymPlanned}
+        runPlanned={runPlanned}
+        gymDone={gymDone}
+        runDone={runDone}
       />
     </div>
   )
