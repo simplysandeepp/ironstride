@@ -1,0 +1,84 @@
+/* IronStride design tokens. Dark is the default; light is opt-in. */
+:root {
+  --bg: #0c0e11;
+  --surface: #14181d;
+  --surface-elevated: #1c2229;
+  --text: #f2f0eb;
+  --text-secondary: #9aa3ad;
+  --text-muted: #6f7882;
+  --border: #2a323b;
+  --accent: #e5383b;
+  --accent-contrast: #ffffff;
+  --gold: #f2b134;
+  --run: #4ea8de;
+  --strength: #f2b134;
+  --success: #3fb950;
+  --warning: #f2b134;
+  --error: #ff6b6b;
+  --focus: #4ea8de;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-metric: 2.5rem;
+
+  --tap-min: 48px;
+  --nav-height: 64px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface-elevated: #efece5;
+  --text: #14181d;
+  --text-secondary: #4a525b;
+  --text-muted: #6b737c;
+  --border: #d9d5cc;
+  --accent: #c8282b;
+  --run: #1f6fa8;
+  --strength: #9a6b00;
+  --gold: #9a6b00;
+  --success: #1f7a33;
+  --warning: #9a6b00;
+  --error: #b42323;
+  --focus: #1f6fa8;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme='system'] {
+    color-scheme: light;
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --surface-elevated: #efece5;
+    --text: #14181d;
+    --text-secondary: #4a525b;
+    --text-muted: #6b737c;
+    --border: #d9d5cc;
+    --accent: #c8282b;
+    --run: #1f6fa8;
+    --strength: #9a6b00;
+    --gold: #9a6b00;
+    --success: #1f7a33;
+    --warning: #9a6b00;
+    --error: #b42323;
+    --focus: #1f6fa8;
+  }
+}
