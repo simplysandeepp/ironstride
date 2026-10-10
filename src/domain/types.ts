@@ -152,3 +152,34 @@ export type AppSettings = {
   quietHoursStart?: string
   quietHoursEnd?: string
 }
+
+export type ExerciseCategory =
+  | 'chest'
+  | 'vertical-pull'
+  | 'horizontal-pull'
+  | 'shoulders'
+  | 'arms'
+  | 'squat'
+  | 'hinge'
+  | 'hamstrings'
+  | 'glutes'
+  | 'calves'
+  | 'core'
+
+export type ExerciseDefinition = {
+  id: string
+  name: string
+  category: ExerciseCategory
+  primaryMuscles: string[]
+  equipment: string[]
+  /** Short technique cues, in order. */
+  instructions: string[]
+  safetyNote: string
+  /** Ids of equivalent exercises the user can swap in. */
+  substitutions: string[]
+  defaultSets: number
+  /** Rep range, or seconds when `measure` is "seconds". */
+  repRange: [number, number]
+  measure: 'reps' | 'seconds'
+  restSeconds: number
+}
