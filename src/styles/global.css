@@ -298,3 +298,49 @@ button:disabled {
   color: var(--accent-contrast);
   font-weight: 700;
 }
+
+.set-row {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr 1fr 48px;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.set-number {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.set-row input[type='checkbox'] {
+  width: 28px;
+  height: 28px;
+  min-height: 0;
+  justify-self: center;
+}
+
+.card h3 {
+  font-size: var(--text-md);
+}
+
+button.danger {
+  background: var(--error);
+  border-color: var(--error);
+  color: #0c0e11;
+  font-weight: 700;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: rgb(0 0 0 / 0.6);
+  z-index: 10;
+}
+
+.dialog {
+  width: min(100%, 420px);
+  background: var(--surface-elevated);
+}

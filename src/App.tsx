@@ -1,10 +1,12 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { NAV_ITEMS } from './app/navigation.ts'
-import { GymScreen, NutritionScreen, ProgressScreen, RunScreen } from './app/screens.tsx'
+import { NutritionScreen, ProgressScreen, RunScreen } from './app/screens.tsx'
 import { BottomNavigation } from './components/BottomNavigation.tsx'
 import { PageHeader } from './components/PageHeader.tsx'
 import { repositories } from './db/repositories.ts'
+import { GymScreen } from './features/gym/GymScreen.tsx'
+import { SessionScreen } from './features/gym/SessionScreen.tsx'
 import { OnboardingScreen } from './features/settings/OnboardingScreen.tsx'
 import { TodayScreen } from './features/today/TodayScreen.tsx'
 import { SettingsScreen } from './features/settings/SettingsScreen.tsx'
@@ -21,7 +23,9 @@ export default function App() {
   const title =
     pathname === '/settings'
       ? 'Settings'
-      : (NAV_ITEMS.find((item) => item.path === pathname)?.label ?? 'IronStride')
+      : pathname.startsWith('/gym/session')
+        ? 'Workout'
+        : (NAV_ITEMS.find((item) => item.path === pathname)?.label ?? 'IronStride')
 
   return (
     <div className="app-shell">
@@ -30,6 +34,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<TodayScreen />} />
           <Route path="/gym" element={<GymScreen />} />
+          <Route path="/gym/session/:id" element={<SessionScreen />} />
           <Route path="/run" element={<RunScreen />} />
           <Route path="/nutrition" element={<NutritionScreen />} />
           <Route path="/progress" element={<ProgressScreen />} />

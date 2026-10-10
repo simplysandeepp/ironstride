@@ -1,11 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Link } from 'react-router-dom'
-import { DEFAULT_PROGRAMME } from '../../data/trainingProgramme.ts'
+import { useProgramme } from '../../app/useProgramme.ts'
 import { EmptyState } from '../../components/EmptyState.tsx'
 import { db } from '../../db/database.ts'
 import { repositories } from '../../db/repositories.ts'
 import { formatDateLong, getLocalDateKey, type DateKey } from '../../domain/dates.ts'
-import { applyOverrides, scaleProgrammeToBaseline } from '../../domain/planner.ts'
 import { isGymWorkout, isRunWorkout } from '../../domain/programme.ts'
 import { addWater, QUICK_SUPPLEMENTS, setSupplementTaken, WATER_TARGET_ML } from './quickLogs.ts'
 import { buildTodayModel, type TaskStatus } from './todayModel.ts'
@@ -19,10 +18,9 @@ const STATUS_LABEL: Record<TaskStatus, string> = {
 type Props = { today?: DateKey }
 
 export function TodayScreen({ today = getLocalDateKey() }: Props) {
+  const plan = useProgramme()
   const data = useLiveQuery(
     async () => ({
-      profile: await repositories.profile.get(),
-      overrides: await db.plannedOverrides.toArray(),
       gymSessions: await db.gymSessions.toArray(),
       runLogs: await db.runLogs.toArray(),
       foodEntries: await repositories.foodEntries.onDate(today),
@@ -33,19 +31,10 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
     [today],
   )
 
-  const programme = data?.profile
-    ? applyOverrides(
-        scaleProgrammeToBaseline(
-          DEFAULT_PROGRAMME,
-          data.profile.weeklyRunBaselineKm,
-          data.profile.recentLongRunKm,
-        ),
-        data.overrides,
-      )
-    : undefined
-
-  if (!data) return <EmptyState title="Loading">Reading your plan.</EmptyState>
-  if (!data.profile || !programme) {
+  if (plan === undefined || !data) {
+    return <EmptyState title="Loading">Reading your plan.</EmptyState>
+  }
+  if (plan === null) {
     return (
       <EmptyState title="Set up your plan">
         Add your details in Settings to see your daily plan.
@@ -54,8 +43,8 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
   }
 
   const model = buildTodayModel({
-    programme,
-    startDate: data.profile.trainingStartDate,
+    programme: plan.programme,
+    startDate: plan.profile.trainingStartDate,
     today,
     gymSessions: data.gymSessions,
     runLogs: data.runLogs,
@@ -78,7 +67,7 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
           </p>
         )}
         {model.phase === 'before-start' && (
-          <p>Your plan starts on {formatDateLong(data.profile.trainingStartDate)}.</p>
+          <p>Your plan starts on {formatDateLong(plan.profile.trainingStartDate)}.</p>
         )}
         {model.phase === 'finished' && <p>You have finished the 26-week plan. Well done.</p>}
         {model.phase === 'active' && (

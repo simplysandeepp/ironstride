@@ -1,9 +1,6 @@
 import { EmptyState } from '../components/EmptyState.tsx'
 
 // Placeholder screens; each is replaced by its feature module in a later PR.
-export const GymScreen = () => (
-  <EmptyState title="No gym sessions yet">Your gym programme will appear here.</EmptyState>
-)
 export const RunScreen = () => (
   <EmptyState title="No runs yet">Your running schedule will appear here.</EmptyState>
 )
