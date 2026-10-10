@@ -13,6 +13,7 @@ import { NutritionScreen } from './features/nutrition/NutritionScreen.tsx'
 import { ProgressScreen } from './features/progress/ProgressScreen.tsx'
 import { RunLogScreen } from './features/run/RunLogScreen.tsx'
 import { RunScreen } from './features/run/RunScreen.tsx'
+import { ReminderBanner } from './features/reminders/ReminderBanner.tsx'
 import { OnboardingScreen } from './features/settings/OnboardingScreen.tsx'
 import { TodayScreen } from './features/today/TodayScreen.tsx'
 import { SettingsScreen } from './features/settings/SettingsScreen.tsx'
@@ -42,6 +43,7 @@ export default function App() {
       <PageHeader title={title} theme={theme} onCycleTheme={cycleTheme} />
       <OfflineIndicator />
       <UpdatePrompt />
+      <ReminderBanner />
       <main className="page-body">
         <Routes>
           <Route path="/" element={<TodayScreen />} />
