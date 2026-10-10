@@ -1,9 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
-import { NAV_ITEMS } from './app/navigation.ts'
+import { domainForPath, NAV_ITEMS } from './app/navigation.ts'
 import { BottomNavigation } from './components/BottomNavigation.tsx'
 import { AutoBackupBanner } from './features/backup/AutoBackupBanner.tsx'
+import { LoadingCard } from './components/LoadingCard.tsx'
 import { OfflineIndicator } from './components/OfflineIndicator.tsx'
 import { UpdatePrompt } from './components/UpdatePrompt.tsx'
 import { PageHeader } from './components/PageHeader.tsx'
@@ -65,21 +66,23 @@ export default function App() {
       <UpdatePrompt />
       <ReminderBanner />
       <AutoBackupBanner active />
-      <main className="page-body">
-        <Suspense fallback={<p className="helper">Loading…</p>}>
-          <Routes>
-            <Route path="/" element={<TodayScreen />} />
-            <Route path="/gym" element={<GymScreen />} />
-            <Route path="/gym/session/:id" element={<SessionScreen />} />
-            <Route path="/run" element={<RunScreen />} />
-            <Route path="/run/log" element={<RunLogScreen />} />
-            <Route path="/nutrition" element={<NutritionScreen />} />
-            <Route path="/nutrition/food" element={<FoodFormScreen />} />
-            <Route path="/progress" element={<ProgressScreen />} />
-            <Route path="/plan" element={<PlanScreen />} />
-            <Route path="/settings" element={<SettingsScreen />} />
-            <Route path="*" element={<TodayScreen />} />
-          </Routes>
+      <main className="page-body" data-domain={domainForPath(pathname)}>
+        <Suspense fallback={<LoadingCard />}>
+          <div key={pathname} className="route-enter">
+            <Routes>
+              <Route path="/" element={<TodayScreen />} />
+              <Route path="/gym" element={<GymScreen />} />
+              <Route path="/gym/session/:id" element={<SessionScreen />} />
+              <Route path="/run" element={<RunScreen />} />
+              <Route path="/run/log" element={<RunLogScreen />} />
+              <Route path="/nutrition" element={<NutritionScreen />} />
+              <Route path="/nutrition/food" element={<FoodFormScreen />} />
+              <Route path="/progress" element={<ProgressScreen />} />
+              <Route path="/plan" element={<PlanScreen />} />
+              <Route path="/settings" element={<SettingsScreen />} />
+              <Route path="*" element={<TodayScreen />} />
+            </Routes>
+          </div>
         </Suspense>
       </main>
       <BottomNavigation />

@@ -14,6 +14,7 @@ import {
   type FoodFormValues,
 } from './foodForm.ts'
 import { timeNow } from './foodActions.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 type NumberKey = 'quantity' | 'caloriesKcal' | 'proteinG' | 'carbsG' | 'fatG' | 'fibreG'
 
@@ -145,7 +146,7 @@ export function FoodFormScreen() {
     [editId],
   )
 
-  if (!existing) return <EmptyState title="Loading">Opening the form.</EmptyState>
+  if (!existing) return <LoadingCard />
   if (editId) {
     if (!existing.entry)
       return <EmptyState title="Food not found">It may have been deleted.</EmptyState>

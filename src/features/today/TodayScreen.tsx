@@ -15,6 +15,7 @@ import {
 } from '../nutrition/habits.ts'
 import { startOrResumeSession } from '../gym/sessionActions.ts'
 import { buildTodayModel, type TaskStatus } from './todayModel.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 const STATUS_LABEL: Record<TaskStatus, string> = {
   done: 'Done',
@@ -41,7 +42,7 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
   )
 
   if (plan === undefined || !data) {
-    return <EmptyState title="Loading">Reading your plan.</EmptyState>
+    return <LoadingCard />
   }
   if (plan === null) {
     return (

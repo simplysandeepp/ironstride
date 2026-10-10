@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { ProgressBar } from '../../components/ProgressBar.tsx'
 import { ConfirmDialog } from '../../components/ConfirmDialog.tsx'
 import { EmptyState } from '../../components/EmptyState.tsx'
 import { SAMPLE_FOODS } from '../../data/sampleFoods.ts'
@@ -12,6 +13,7 @@ import { BodyWeight } from './BodyWeight.tsx'
 import { DailyHabits } from './DailyHabits.tsx'
 import { addCopy, toggleFavourite } from './foodActions.ts'
 import { getRecentFoods, MEALS, mealLabel } from './foodForm.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 function Macro({
   label,
@@ -34,7 +36,7 @@ function Macro({
         </span>
       </div>
       {target !== undefined && (
-        <progress aria-label={`${label} progress`} max={target} value={Math.min(value, target)} />
+        <ProgressBar label={`${label} progress`} value={value} max={target} tone="nutrition" />
       )}
     </div>
   )
@@ -54,7 +56,7 @@ export function NutritionScreen() {
     }),
     [date],
   )
-  if (!data) return <EmptyState title="Loading">Reading your food log.</EmptyState>
+  if (!data) return <LoadingCard />
 
   const totals = calculateDailyNutrition(data.entries)
   const remaining = data.targets ? getRemaining(totals, data.targets) : undefined

@@ -1,34 +1,58 @@
-/* IronStride design tokens. Dark is the default; light is opt-in. */
+/*
+ * IronStride design tokens. Dark is the default; light is opt-in.
+ * Every colour that carries text or an icon was checked for WCAG AA contrast on all four surfaces.
+ */
 :root {
-  --bg: #0c0e11;
-  --surface: #14181d;
-  --surface-elevated: #1c2229;
-  --text: #f2f0eb;
-  --text-secondary: #9aa3ad;
-  --text-muted: #8a939d;
-  --border: #2a323b;
+  /* Surfaces: four calm steps from page to raised control. */
+  --bg: #0a0c0f;
+  --surface: #11151a;
+  --surface-elevated: #181d24;
+  --surface-raised: #1f2530;
+
+  /* Text */
+  --text: #f5f3ef;
+  --text-secondary: #a9b2bd;
+  --text-muted: #8d97a3;
+
+  /* Lines */
+  --border: #232b35;
+  --border-strong: #2e3844;
+
+  /* Brand: ember red for the main action; used sparingly so it keeps its meaning. */
   --accent: #e5383b;
-  /* Fill behind white text, and red used as text: both pass WCAG AA contrast on every surface. */
-  --accent-fill: #d62f32;
-  --accent-text: #ff5a5d;
+  --accent-fill: #d62f32; /* behind white text */
+  --accent-text: #ff5a5d; /* red used as text */
   --accent-contrast: #ffffff;
-  --gold: #f2b134;
+
+  /* One clear colour per area of training, used the same way on every screen. */
   --run: #4ea8de;
-  --strength: #f2b134;
-  --success: #3fb950;
+  --gym: #f2b134;
+  --nutrition: #4cc38a;
+  --body: #a78bfa;
+  --gold: #f2b134;
+  --strength: var(--gym);
+
+  /* Status */
+  --success: #4cc38a;
   --warning: #f2b134;
-  --error: #ff6b6b;
-  --focus: #4ea8de;
-  --heat-0: #1c2229;
+  --error: #ff7a7a;
+  --focus: #6cc0f5;
+
+  /* Heatmap ramp, quiet to bright. */
+  --heat-0: #1a2029;
   --heat-1: #6b1d20;
   --heat-2: #b52a2e;
   --heat-3: #e8782f;
   --heat-4: #f2b134;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  /* Shape */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 12px 28px rgb(0 0 0 / 0.28);
+  --shadow-pop: 0 20px 50px rgb(0 0 0 / 0.5);
 
+  /* Spacing */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -36,71 +60,106 @@
   --space-5: 24px;
   --space-6: 32px;
 
+  /* Type scale */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
-  --text-lg: 1.25rem;
+  --text-lg: 1.1875rem;
   --text-xl: 1.75rem;
   --text-metric: 2.5rem;
 
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 140ms;
+  --dur: 240ms;
+
+  /* Layout */
   --tap-min: 48px;
-  --nav-height: 64px;
+  --nav-height: 68px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
+
+  /* The colour of the area you are in; screens and nav items override it. */
+  --domain: var(--accent);
+}
+
+[data-domain='gym'] {
+  --domain: var(--gym);
+}
+[data-domain='run'] {
+  --domain: var(--run);
+}
+[data-domain='nutrition'] {
+  --domain: var(--nutrition);
+}
+[data-domain='body'] {
+  --domain: var(--body);
 }
 
 :root[data-theme='light'] {
   color-scheme: light;
-  --bg: #f6f4ef;
+  --bg: #f4f2ed;
   --surface: #ffffff;
-  --surface-elevated: #efece5;
+  --surface-elevated: #faf8f4;
+  --surface-raised: #efebe3;
   --text: #14181d;
   --text-secondary: #4a525b;
-  --text-muted: #5f6770;
-  --border: #d9d5cc;
+  --text-muted: #5b636c;
+  --border: #e4dfd5;
+  --border-strong: #d4cec2;
   --accent: #c8282b;
   --accent-fill: #c8282b;
   --accent-text: #c8282b;
   --run: #1f6fa8;
-  --strength: #9a6b00;
-  --gold: #9a6b00;
-  --success: #1f7a33;
-  --warning: #9a6b00;
+  --gym: #8f6200;
+  --nutrition: #17724a;
+  --body: #6a45d6;
+  --gold: #8f6200;
+  --success: #17724a;
+  --warning: #8f6200;
   --error: #b42323;
   --focus: #1f6fa8;
-  --heat-0: #e6e1d6;
+  --heat-0: #e8e3d9;
   --heat-1: #f0b3b4;
   --heat-2: #d94a4d;
   --heat-3: #e08a3c;
   --heat-4: #c98a00;
+  --shadow-card: 0 1px 2px rgb(20 24 29 / 0.06), 0 8px 22px rgb(20 24 29 / 0.07);
+  --shadow-pop: 0 20px 50px rgb(20 24 29 / 0.25);
 }
 
 @media (prefers-color-scheme: light) {
   :root[data-theme='system'] {
     color-scheme: light;
-    --bg: #f6f4ef;
+    --bg: #f4f2ed;
     --surface: #ffffff;
-    --surface-elevated: #efece5;
+    --surface-elevated: #faf8f4;
+    --surface-raised: #efebe3;
     --text: #14181d;
     --text-secondary: #4a525b;
-    --text-muted: #5f6770;
-    --border: #d9d5cc;
+    --text-muted: #5b636c;
+    --border: #e4dfd5;
+    --border-strong: #d4cec2;
     --accent: #c8282b;
     --accent-fill: #c8282b;
     --accent-text: #c8282b;
     --run: #1f6fa8;
-    --strength: #9a6b00;
-    --gold: #9a6b00;
-    --success: #1f7a33;
-    --warning: #9a6b00;
+    --gym: #8f6200;
+    --nutrition: #17724a;
+    --body: #6a45d6;
+    --gold: #8f6200;
+    --success: #17724a;
+    --warning: #8f6200;
     --error: #b42323;
     --focus: #1f6fa8;
-    --heat-0: #e6e1d6;
+    --heat-0: #e8e3d9;
     --heat-1: #f0b3b4;
     --heat-2: #d94a4d;
     --heat-3: #e08a3c;
     --heat-4: #c98a00;
+    --shadow-card: 0 1px 2px rgb(20 24 29 / 0.06), 0 8px 22px rgb(20 24 29 / 0.07);
+    --shadow-pop: 0 20px 50px rgb(20 24 29 / 0.25);
   }
 }

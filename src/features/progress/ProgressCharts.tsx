@@ -101,6 +101,7 @@ export function ProgressCharts(props: Props) {
       <section className="card" aria-labelledby="gym-heading">
         <h2 id="gym-heading">Gym sessions vs target</h2>
         <BarChart
+          tone="gym"
           title="Completed gym sessions per week"
           unit="sessions"
           data={gymWeeks.map((w) => ({
@@ -129,6 +130,7 @@ export function ProgressCharts(props: Props) {
       <section className="card" aria-labelledby="weight-heading">
         <h2 id="weight-heading">Body weight</h2>
         <LineChart
+          tone="body"
           title="Body weight trend"
           unit="kg"
           points={trend.map((t) => ({ date: t.date, value: t.weightKg, avg: t.rollingAvgKg }))}
@@ -162,6 +164,7 @@ export function ProgressCharts(props: Props) {
               </select>
             </div>
             <LineChart
+              tone="gym"
               title={`Top set load for ${getExercise(chosen)?.name ?? chosen}`}
               unit="kg"
               points={strength}

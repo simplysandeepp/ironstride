@@ -21,6 +21,7 @@ import {
   unskipExercise,
   updateSet,
 } from './sessionModel.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 const formatRest = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
@@ -256,7 +257,7 @@ export function SessionScreen() {
     }),
     [id],
   )
-  if (!loaded) return <EmptyState title="Loading">Opening your workout.</EmptyState>
+  if (!loaded) return <LoadingCard />
   if (!loaded.session) {
     return <EmptyState title="Workout not found">It may have been discarded.</EmptyState>
   }

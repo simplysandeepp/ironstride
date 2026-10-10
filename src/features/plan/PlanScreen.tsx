@@ -20,6 +20,7 @@ import {
 } from '../../domain/programme.ts'
 import { DEFAULT_PROGRAMME } from '../../data/trainingProgramme.ts'
 import { clearOverride, parseDistance, saveDistanceOverride } from './planEdit.ts'
+import { LoadingCard } from '../../components/LoadingCard.tsx'
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -145,7 +146,7 @@ function WeekCard({
 
 export function PlanScreen({ today = getLocalDateKey() }: { today?: DateKey }) {
   const plan = useProgramme()
-  if (plan === undefined) return <EmptyState title="Loading">Reading your plan.</EmptyState>
+  if (plan === undefined) return <LoadingCard />
   if (plan === null)
     return <EmptyState title="Set up your plan">Add your details in Settings first.</EmptyState>
 
