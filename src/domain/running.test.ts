@@ -61,3 +61,45 @@ describe('validateRunLog', () => {
     })
   })
 })
+
+import { formatDuration, getLoadWarning, parseDuration } from './running.ts'
+
+describe('duration', () => {
+  it('parses minutes, mm:ss and h:mm:ss', () => {
+    expect(parseDuration('45')).toBe(2700)
+    expect(parseDuration('27:30')).toBe(1650)
+    expect(parseDuration('1:05:30')).toBe(3930)
+    expect(parseDuration('37.5')).toBe(2250)
+  })
+
+  it('rejects junk, zero and out-of-range parts', () => {
+    for (const bad of ['', 'abc', '0', '5:75', '1:2:3:4', '-5', '0:00']) {
+      expect(parseDuration(bad), bad).toBeUndefined()
+    }
+  })
+
+  it('formats seconds back to text', () => {
+    expect(formatDuration(1650)).toBe('27:30')
+    expect(formatDuration(3930)).toBe('1:05:30')
+    expect(formatDuration(undefined)).toBe('')
+  })
+})
+
+describe('getLoadWarning', () => {
+  it('stays quiet when the plan is near what you run', () => {
+    expect(getLoadWarning(22, 18)).toBeUndefined()
+    expect(getLoadWarning(22.5, 18)).toBeUndefined()
+  })
+
+  it('warns when the plan is well above the base and recent weeks', () => {
+    expect(getLoadWarning(30, 18, [15, 20])).toContain('30 km')
+  })
+
+  it('uses a stronger recent week as the reference, so keeping up removes the warning', () => {
+    expect(getLoadWarning(30, 18, [26])).toBeUndefined()
+  })
+
+  it('does nothing without a usable base', () => {
+    expect(getLoadWarning(30, 0)).toBeUndefined()
+  })
+})
