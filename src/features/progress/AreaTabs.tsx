@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { InsightList } from '../../components/InsightCard.tsx'
 import type { Insight } from '../../domain/insights/insightCards.ts'
+import { FuelDetail } from './FuelDetail.tsx'
 import { RunDetail } from './RunDetail.tsx'
 import { StrengthDetail } from './StrengthDetail.tsx'
 import { RunCharts, StrengthCharts, WeightCard, type ChartProps } from './ProgressCharts.tsx'
@@ -90,6 +91,7 @@ export function FuelTab({ data, insights }: { data: DashboardData; insights: rea
         insights={insights.filter((i) => i.area === 'fuel' || i.area === 'body')}
         empty="Log food for a few days and a morning weight each week, and your intake and body insights appear here."
       />
+      <FuelDetail data={data} />
       <WeightCard {...toChartProps(data)} />
     </>
   )
