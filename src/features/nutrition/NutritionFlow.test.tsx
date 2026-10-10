@@ -155,3 +155,33 @@ describe('water, supplements and meal ideas', () => {
     expect(await screen.findByText(/oats, fortified soy milk/i)).toBeInTheDocument()
   })
 })
+
+describe('body weight', () => {
+  it('saves a weight, replaces it when corrected on the same day, and deletes it', async () => {
+    renderNutrition()
+    await userEvent.type(await screen.findByLabelText('Weight (kg)'), '66.4')
+    await userEvent.click(screen.getByRole('button', { name: 'Save measurement' }))
+    await waitFor(async () => expect(await repositories.bodyMeasurements.all()).toHaveLength(1))
+
+    const weight = await screen.findByLabelText('Weight (kg)')
+    await userEvent.clear(weight)
+    await userEvent.type(weight, '66.9')
+    await userEvent.click(screen.getByRole('button', { name: 'Save measurement' }))
+    await waitFor(async () =>
+      expect((await repositories.bodyMeasurements.all())[0].weightKg).toBe(66.9),
+    )
+    expect(await repositories.bodyMeasurements.all()).toHaveLength(1)
+    expect(await screen.findByText(/latest 66.9 kg/i)).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: /delete measurement/i }))
+    await waitFor(async () => expect(await repositories.bodyMeasurements.all()).toHaveLength(0))
+  })
+
+  it('shows an explanation instead of a chart when nothing is logged, and rejects bad values', async () => {
+    renderNutrition()
+    expect(await screen.findByText(/no weight logged yet/i)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Save measurement' }))
+    expect((await screen.findAllByRole('alert'))[0]).toHaveTextContent(/weight or your waist/i)
+    expect(await repositories.bodyMeasurements.all()).toHaveLength(0)
+  })
+})

@@ -133,6 +133,8 @@ export type WaterEntry = {
   id: string
   date: DateKey
   amountMl: number
+  /** ISO time the entry was added; used to undo the most recent one. */
+  createdAt?: string
 }
 
 export type Reminder = {
@@ -165,6 +167,8 @@ export type AppSettings = {
   waterServingMl?: number
   supplements?: SupplementConfig[]
   hideMealIdeas?: boolean
+  /** Week start of the calorie suggestion the user dismissed. */
+  dismissedCalorieSuggestion?: string
 }
 
 export type ExerciseCategory =
