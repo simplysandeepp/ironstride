@@ -96,8 +96,11 @@ describe('ProgressScreen', () => {
     await userEvent.click(await screen.findByRole('button', { name: /monday 12 october/i }))
     const summary = screen.getByRole('heading', { name: /monday 12 october/i })
     expect(summary).toBeInTheDocument()
-    expect(screen.getByText(/run:/i).parentElement).toHaveTextContent('11 km · Long run')
-    expect(screen.getByText(/planned: upper a, easy run/i)).toBeInTheDocument()
+    const daySection = summary.closest('section') as HTMLElement
+    expect(within(daySection).getByText(/run:/i).parentElement).toHaveTextContent(
+      '11 km · Long run',
+    )
+    expect(within(daySection).getByText(/planned: upper a, easy run/i)).toBeInTheDocument()
 
     await userEvent.click(
       screen.getByRole('button', { name: /sunday 18 october.*planned rest day/i }),
@@ -108,5 +111,44 @@ describe('ProgressScreen', () => {
   it('explains how streaks work', async () => {
     renderProgress()
     expect(await screen.findByText(/planned rest days never break it/i)).toBeInTheDocument()
+  })
+})
+
+describe('ProgressScreen charts', () => {
+  it('explains empty charts instead of drawing fake data', async () => {
+    renderProgress()
+    expect(await screen.findByText(/no runs logged yet\. log a run/i)).toBeInTheDocument()
+    expect(screen.getByText(/no weight logged yet/i)).toBeInTheDocument()
+    expect(screen.getByText(/finish a workout with weights logged/i)).toBeInTheDocument()
+    expect(screen.getByText(/week 1 of 26/i)).toBeInTheDocument()
+  })
+
+  it('summarises real runs, weights and lifts', async () => {
+    await repositories.runLogs.save({
+      id: 'r',
+      date: '2026-10-17',
+      type: 'long',
+      actualDistanceKm: 8,
+      completed: true,
+    })
+    await repositories.bodyMeasurements.save({ id: 'b', date: '2026-10-17', weightKg: 66.5 })
+    await repositories.gymSessions.save({
+      id: 'g',
+      date: '2026-10-12',
+      title: 'Upper A',
+      status: 'completed',
+      exercises: [
+        {
+          exerciseId: 'bench-press',
+          exerciseNameSnapshot: 'Barbell bench press',
+          sets: [{ id: 's', setNumber: 1, loadKg: 40, reps: 8, completed: true }],
+        },
+      ],
+    })
+    renderProgress()
+    expect(await screen.findByText(/longest in the last 8 weeks: 8 km/i)).toBeInTheDocument()
+    expect(screen.getByText(/latest 66.5 kg\. weight gain is not all muscle/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('Exercise')).toHaveValue('bench-press')
+    expect(screen.getByText(/latest 40 kg after 1 session/i)).toBeInTheDocument()
   })
 })
