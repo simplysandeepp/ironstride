@@ -1,0 +1,63 @@
+import { describe, expect, it } from 'vitest'
+import {
+  calculateRunPace,
+  calculateWeeklyRunDistance,
+  formatPace,
+  parsePace,
+  validateRunLog,
+} from './running.ts'
+import type { RunLog } from './types.ts'
+
+const run = (date: string, km: number, completed = true): RunLog => ({
+  id: `${date}-${km}`,
+  date,
+  type: 'easy',
+  actualDistanceKm: km,
+  completed,
+})
+
+describe('pace', () => {
+  it('computes seconds per km and formats it', () => {
+    expect(calculateRunPace(5, 1650)).toBe(330)
+    expect(formatPace(330)).toBe('5:30')
+    expect(formatPace(359.6)).toBe('6:00')
+  })
+
+  it('returns nothing for zero, negative or invalid input', () => {
+    expect(calculateRunPace(0, 1000)).toBeUndefined()
+    expect(calculateRunPace(5, 0)).toBeUndefined()
+    expect(calculateRunPace(-1, 100)).toBeUndefined()
+    expect(calculateRunPace(Number.NaN, 100)).toBeUndefined()
+    expect(formatPace(undefined)).toBe('--')
+  })
+
+  it('parses m:ss input', () => {
+    expect(parsePace('5:30')).toBe(330)
+    expect(parsePace('5.5')).toBeUndefined()
+    expect(parsePace('5:75')).toBeUndefined()
+  })
+})
+
+describe('weekly distance', () => {
+  it('sums only completed runs in that Monday-Sunday week', () => {
+    const logs = [
+      run('2026-10-12', 5),
+      run('2026-10-15', 5.5),
+      run('2026-10-17', 8, false),
+      run('2026-10-18', 10),
+      run('2026-10-19', 6),
+    ]
+    expect(calculateWeeklyRunDistance(logs, '2026-10-14')).toBe(20.5)
+  })
+})
+
+describe('validateRunLog', () => {
+  it('flags bad distance, duration and effort', () => {
+    expect(validateRunLog({ actualDistanceKm: 5, durationSeconds: 1500, rpe: 4 })).toEqual({})
+    expect(validateRunLog({ actualDistanceKm: -1, durationSeconds: 0, rpe: 11 })).toEqual({
+      distance: expect.any(String),
+      duration: expect.any(String),
+      rpe: expect.any(String),
+    })
+  })
+})
