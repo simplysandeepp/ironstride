@@ -4,7 +4,7 @@ import { db } from '../../db/database.ts'
 import { repositories } from '../../db/repositories.ts'
 import { getLocalDateKey } from '../../domain/dates.ts'
 import { showSystemNotification } from './notify.ts'
-import { getDueReminders, mergeReminders, SNOOZE_MINUTES } from './reminders.ts'
+import { getDueReminders, mergeReminders, reminderPath, SNOOZE_MINUTES } from './reminders.ts'
 import { loadMemory, markHandled, snooze } from './reminderStore.ts'
 
 const CHECK_EVERY_MS = 30_000
@@ -41,7 +41,10 @@ export function ReminderBanner({ now = () => new Date() }: { now?: () => Date })
     const key = `${today}|${first.id}`
     if (notified.current.has(key)) return
     notified.current.add(key)
-    void showSystemNotification('IronStride', first.title)
+    void showSystemNotification('IronStride', first.title, {
+      path: reminderPath(first.type),
+      tag: `reminder-${first.id}`,
+    })
   }, [first, today, data?.settings.notificationsEnabled, tick])
 
   if (!first) return null

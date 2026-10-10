@@ -1,12 +1,15 @@
-// Loaded by the service worker. Without this, tapping a reminder notification does nothing.
+// Loaded by the service worker. Tapping a reminder notification opens the app on the right screen.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
-  const url = (event.notification.data && event.notification.data.url) || '/'
+  const data = event.notification.data
+  const path = data && typeof data.url === 'string' ? data.url : '/'
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
-      // Bring the open app forward without reloading it, so a workout in progress is untouched.
       const open = windows.find((w) => 'focus' in w)
-      return open ? open.focus() : self.clients.openWindow(url)
+      if (!open) return self.clients.openWindow(path)
+      // The app is already running: bring it forward and let it move on its own, without a
+      // reload, so a workout in progress is not lost.
+      return open.focus().then(() => open.postMessage({ type: 'open-path', path }))
     }),
   )
 })

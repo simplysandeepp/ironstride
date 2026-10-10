@@ -35,6 +35,19 @@ export const DEFAULT_REMINDERS: readonly Defaults[] = [
   },
 ]
 
+/** Where tapping a reminder's notification should land. */
+export function reminderPath(type: Reminder['type']): string {
+  switch (type) {
+    case 'gym':
+      return '/gym'
+    case 'run':
+      return '/run'
+    // Meals, water, creatine and the evening weight all live on the nutrition screen.
+    default:
+      return '/nutrition'
+  }
+}
+
 /** Saved changes win; reminders added in later versions still show up with their defaults. */
 export function mergeReminders(saved: readonly Reminder[]): Reminder[] {
   const byId = new Map(saved.map((r) => [r.id, r]))

@@ -2,17 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { runAutoBackup, type AutoBackupOptions, type AutoBackupStatus } from './autoBackup.ts'
 import { realAutoBackupDeps } from './autoBackupRuntime.ts'
 
-/** Asks the browser to protect stored data from clean-up. Never throws; the answer is not needed. */
-export async function requestPersistentStorage(): Promise<boolean> {
-  try {
-    if (!navigator.storage?.persist) return false
-    if (await navigator.storage.persisted()) return true
-    return await navigator.storage.persist()
-  } catch {
-    return false
-  }
-}
-
 /**
  * Backs up when the app opens and again whenever it is left or hidden. There is no timer:
  * a web app is not run by the phone while it is closed.
@@ -38,11 +27,6 @@ export function useAutoBackup(active: boolean) {
     }
     return job
   }, [])
-
-  // Ask the browser to keep this app's data and not clear it when the phone is short on space.
-  useEffect(() => {
-    if (active) void requestPersistentStorage()
-  }, [active])
 
   // Browsers only show the folder prompt after a tap, so use the first touch anywhere in the
   // app, once, instead of waiting for the person to find a button.

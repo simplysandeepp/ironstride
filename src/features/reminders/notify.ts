@@ -1,5 +1,10 @@
 /** Shows a system notification if the user allowed it. Returns false when it could not. */
-export async function showSystemNotification(title: string, body: string): Promise<boolean> {
+export async function showSystemNotification(
+  title: string,
+  body: string,
+  options: { path?: string; tag?: string } = {},
+): Promise<boolean> {
+  const { path = '/', tag = title } = options
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return false
   try {
     const registration =
@@ -8,11 +13,11 @@ export async function showSystemNotification(title: string, body: string): Promi
       await registration.showNotification(title, {
         body,
         icon: '/icons/icon-192.png',
-        tag: title,
-        data: { url: '/' },
+        tag,
+        data: { url: path },
       })
     } else {
-      new Notification(title, { body, icon: '/icons/icon-192.png', tag: title })
+      new Notification(title, { body, icon: '/icons/icon-192.png', tag, data: { url: path } })
     }
     return true
   } catch {

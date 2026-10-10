@@ -130,7 +130,11 @@ describe('ReminderBanner', () => {
     await waitFor(() => expect(ctor).toHaveBeenCalledTimes(1))
     expect(ctor).toHaveBeenCalledWith(
       'IronStride',
-      expect.objectContaining({ body: 'Gym session today' }),
+      expect.objectContaining({
+        body: 'Gym session today',
+        tag: 'reminder-gym',
+        data: { url: '/gym' },
+      }),
     )
   })
 

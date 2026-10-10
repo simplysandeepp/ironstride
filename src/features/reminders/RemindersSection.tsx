@@ -36,6 +36,7 @@ export function RemindersSection() {
     const ok = await showSystemNotification(
       'IronStride test',
       'Notifications are working on this device.',
+      { path: '/settings' },
     )
     setTestResult(
       ok
