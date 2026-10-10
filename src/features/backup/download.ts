@@ -1,3 +1,5 @@
+import { getLocalDateKey } from '../../domain/dates.ts'
+
 /** Saves text as a file through the browser. Works offline; nothing is uploaded anywhere. */
 export function downloadTextFile(filename: string, text: string, mime: string) {
   const url = URL.createObjectURL(new Blob([text], { type: mime }))
@@ -11,4 +13,4 @@ export function downloadTextFile(filename: string, text: string, mime: string) {
 }
 
 export const backupFilename = (now: Date = new Date()) =>
-  `ironstride-backup-${now.toISOString().slice(0, 10)}.json`
+  `ironstride-backup-${getLocalDateKey(now)}.json`

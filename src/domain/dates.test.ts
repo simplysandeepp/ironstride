@@ -32,9 +32,12 @@ describe('getLocalDateKey', () => {
     expect(getLocalDateKey(instant, 'America/Los_Angeles')).toBe('2026-10-10')
   })
 
-  it('uses device-local fields when no timezone is given', () => {
-    const local = new Date(2026, 0, 5, 23, 59)
-    expect(getLocalDateKey(local)).toBe('2026-01-05')
+  it('uses India Standard Time by default, whatever the device zone is', () => {
+    // 20:30 UTC on 10 Oct is already 02:00 on 11 Oct in India.
+    expect(getLocalDateKey(new Date('2026-10-10T20:30:00Z'))).toBe('2026-10-11')
+    // 23:59 in India on 5 Jan is still 5 Jan, even though it is 18:29 UTC.
+    expect(getLocalDateKey(new Date('2026-01-05T23:59:00+05:30'))).toBe('2026-01-05')
+    expect(getLocalDateKey(new Date('2026-01-06T00:00:00+05:30'))).toBe('2026-01-06')
   })
 })
 

@@ -82,7 +82,7 @@ describe('ReminderBanner', () => {
   const monday =
     (h: number, m = 0) =>
     () =>
-      new Date(2026, 9, 12, h, m)
+      new Date(`2026-10-12T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00+05:30`)
 
   async function enableGym() {
     await repositories.settings.save({ ...DEFAULT_SETTINGS })
@@ -118,7 +118,7 @@ describe('ReminderBanner', () => {
     await userEvent.click(await screen.findByRole('button', { name: /snooze 10 min/i }))
     expect(screen.queryByText(/gym session today/i)).toBeNull()
     const memory = JSON.parse(localStorage.getItem('ironstride.reminderMemory') ?? '{}')
-    expect(memory.snoozedUntil.gym).toBe(new Date(2026, 9, 12, 8, 10).getTime())
+    expect(memory.snoozedUntil.gym).toBe(new Date('2026-10-12T08:10:00+05:30').getTime())
   })
 
   it('posts a system notification only when notifications are enabled and allowed', async () => {
