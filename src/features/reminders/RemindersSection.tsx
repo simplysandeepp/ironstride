@@ -103,7 +103,7 @@ export function RemindersSection() {
                     }}
                   />
                 </div>
-                <div className="chips" role="group" aria-label={`Days for ${r.title}`}>
+                <div className="chips days" role="group" aria-label={`Days for ${r.title}`}>
                   {DAY_LABELS.map((label, day) => (
                     <button
                       key={day}
