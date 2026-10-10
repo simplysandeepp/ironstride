@@ -1,4 +1,5 @@
 import { getLocalDateKey } from '../../domain/dates.ts'
+import { RestorePrompt } from '../backup/RestorePrompt.tsx'
 import { ProfileForm } from './ProfileForm.tsx'
 import { defaultProfileValues } from './profileValues.ts'
 import { saveProfileValues, skipOnboarding } from './saveProfile.ts'
@@ -13,6 +14,7 @@ export function OnboardingScreen() {
         <p className="helper">
           These starting values are editable defaults. Everything is stored on this device only.
         </p>
+        <RestorePrompt />
         <ProfileForm
           initial={defaultProfileValues(getLocalDateKey())}
           submitLabel="Start training"

@@ -171,6 +171,11 @@ export type AppSettings = {
   dismissedCalorieSuggestion?: string
   /** ISO time of the last JSON backup export. */
   lastBackupAt?: string
+  /** Automatic backup to a chosen folder (or a daily reminder where folders are unsupported). */
+  autoBackupEnabled?: boolean
+  autoBackupFolderName?: string
+  lastAutoBackupAt?: string
+  lastAutoBackupError?: string
 }
 
 export type ExerciseCategory =
