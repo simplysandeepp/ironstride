@@ -19,6 +19,8 @@ export async function requestPersistentStorage(): Promise<boolean> {
  */
 export function useAutoBackup(active: boolean) {
   const [status, setStatus] = useState<AutoBackupStatus>()
+  // True once the browser has been asked and still did not give access.
+  const [declined, setDeclined] = useState(false)
   const asking = useRef<Promise<AutoBackupStatus>>(undefined)
 
   // For a tap (such as "Allow backups"), where the browser may ask for folder access.
@@ -26,6 +28,7 @@ export function useAutoBackup(active: boolean) {
   const run = useCallback((options?: AutoBackupOptions) => {
     if (options?.requestPermission && asking.current) return asking.current
     const job = runAutoBackup(realAutoBackupDeps(), options).then((result) => {
+      if (options?.requestPermission) setDeclined(result === 'needs-permission')
       setStatus(result)
       return result
     })
@@ -74,5 +77,5 @@ export function useAutoBackup(active: boolean) {
     }
   }, [active])
 
-  return { status, run }
+  return { status, run, declined }
 }

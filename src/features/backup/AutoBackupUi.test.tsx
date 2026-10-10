@@ -266,6 +266,23 @@ describe('AutoBackupBanner', () => {
     await waitFor(() => expect(folder.permissionRequests).toBe(2))
   })
 
+  it('says plainly when the browser did not give access, instead of just asking again', async () => {
+    await seedRun()
+    const folder = createFakeFolder('IronStride Backup', 'prompt')
+    folder.grantOnRequest = false
+    store.handle = folder
+    pickerReturns(folder)
+    await repositories.settings.save({
+      ...DEFAULT_SETTINGS,
+      autoBackupEnabled: true,
+      autoBackupFolderName: folder.name,
+    })
+    renderBanner()
+    await userEvent.click(await screen.findByRole('button', { name: 'Allow backups' }))
+    expect(await screen.findByText(/access was not given/i)).toBeInTheDocument()
+    expect(screen.getByText(/cannot keep folder access/i)).toBeInTheDocument()
+  })
+
   it('tells the person which choice stops the question coming back', async () => {
     const folder = createFakeFolder('IronStride Backup', 'prompt')
     store.handle = folder

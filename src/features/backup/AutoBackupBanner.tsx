@@ -9,7 +9,7 @@ import { useAutoBackup } from './useAutoBackup.ts'
 
 /** Shows only what needs the user: a permission tap, a protected folder, a failure, or the daily save reminder. */
 export function AutoBackupBanner({ active }: { active: boolean }) {
-  const { status, run } = useAutoBackup(active)
+  const { status, run, declined } = useAutoBackup(active)
   const info = useLiveQuery(async () => {
     const settings = await repositories.settings.get()
     const hasData = hasMeaningfulData(await readAllData())
@@ -26,12 +26,22 @@ export function AutoBackupBanner({ active }: { active: boolean }) {
     return (
       <div className="update-prompt" role="status" aria-label="Backup permission">
         <p>
-          <strong>Allow backups.</strong> Tap anywhere, then choose{' '}
-          <strong>Allow on every visit</strong> so IronStride can save to
-          {settings.autoBackupFolderName
-            ? ` "${settings.autoBackupFolderName}"`
-            : ' your backup folder'}{' '}
-          every time you open it, without asking again.
+          {declined ? (
+            <>
+              <strong>Access was not given.</strong> In the browser&apos;s popup, choose{' '}
+              <strong>Allow on every visit</strong>, then tap again. If no popup appears, this
+              browser cannot keep folder access: use Settings, then Backup, to save a copy yourself.
+            </>
+          ) : (
+            <>
+              <strong>Allow backups.</strong> Tap anywhere, then choose{' '}
+              <strong>Allow on every visit</strong> so IronStride can save to
+              {settings.autoBackupFolderName
+                ? ` "${settings.autoBackupFolderName}"`
+                : ' your backup folder'}{' '}
+              every time you open it, without asking again.
+            </>
+          )}
         </p>
         <button
           type="button"
