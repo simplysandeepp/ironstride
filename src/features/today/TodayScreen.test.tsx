@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db } from '../../db/database.ts'
 import { repositories } from '../../db/repositories.ts'
@@ -40,13 +40,14 @@ describe('TodayScreen', () => {
     expect(await screen.findByText('Upper A')).toBeInTheDocument()
     expect(screen.getByText('Easy run')).toBeInTheDocument()
     expect(screen.getByText(/week 1 of 26/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Start workout' })).toHaveAttribute('href', '/gym')
+    expect(screen.getByRole('button', { name: 'Start workout' })).toBeInTheDocument()
   })
 
   it('labels Sunday as a recovery day with no start action', async () => {
     renderToday('2026-10-18')
     expect(await screen.findByRole('heading', { name: 'Recovery day' })).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /start workout|log run/i })).toBeNull()
+    expect(screen.queryByRole('button', { name: /start workout/i })).toBeNull()
+    expect(screen.queryByRole('link', { name: /log run/i })).toBeNull()
   })
 
   it('says the plan has not started yet before the start date', async () => {
@@ -76,5 +77,68 @@ describe('TodayScreen', () => {
       expect(total).toBe(250)
     })
     expect(await screen.findByText('250')).toBeInTheDocument()
+  })
+})
+
+function Where() {
+  return <p data-testid="where">{useLocation().pathname + useLocation().search}</p>
+}
+
+describe('TodayScreen one-tap actions', () => {
+  beforeEach(seedProfile)
+
+  it('starts the workout in one tap, creating a single session even on a double tap', async () => {
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<TodayScreen today={START} />} />
+          <Route path="/gym/session/:id" element={<Where />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    await userEvent.dblClick(await screen.findByRole('button', { name: 'Start workout' }))
+    const where = await screen.findByTestId('where')
+    const sessions = await repositories.gymSessions.all()
+    expect(sessions).toHaveLength(1)
+    expect(where).toHaveTextContent(`/gym/session/${sessions[0].id}`)
+    expect(sessions[0]).toMatchObject({ status: 'in-progress', plannedWorkoutId: 'w1-d1-gym' })
+  })
+
+  it('opens the planned run form directly when a run is next', async () => {
+    await repositories.gymSessions.save({
+      id: 'g',
+      date: START,
+      title: 'Upper A',
+      status: 'completed',
+      plannedWorkoutId: 'w1-d1-gym',
+      exercises: [],
+    })
+    render(
+      <MemoryRouter>
+        <Routes>
+          <Route path="/" element={<TodayScreen today={START} />} />
+          <Route path="/run/log" element={<Where />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+    await userEvent.click(await screen.findByRole('link', { name: 'Log run' }))
+    expect(await screen.findByTestId('where')).toHaveTextContent('/run/log?planned=w1-d1-run')
+  })
+
+  it('offers Resume when a session is already in progress', async () => {
+    await repositories.gymSessions.save({
+      id: 'g',
+      date: START,
+      title: 'Upper A',
+      status: 'in-progress',
+      plannedWorkoutId: 'w1-d1-gym',
+      exercises: [],
+    })
+    render(
+      <MemoryRouter>
+        <TodayScreen today={START} />
+      </MemoryRouter>,
+    )
+    expect(await screen.findByRole('button', { name: 'Resume workout' })).toBeInTheDocument()
   })
 })
