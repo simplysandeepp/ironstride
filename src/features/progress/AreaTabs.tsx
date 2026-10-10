@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { InsightList } from '../../components/InsightCard.tsx'
 import type { Insight } from '../../domain/insights/insightCards.ts'
 import { RunDetail } from './RunDetail.tsx'
+import { StrengthDetail } from './StrengthDetail.tsx'
 import { RunCharts, StrengthCharts, WeightCard, type ChartProps } from './ProgressCharts.tsx'
 import type { DashboardData } from './useDashboardData.ts'
 
@@ -74,6 +75,7 @@ export function StrengthTab({
         insights={insights.filter((i) => i.area === 'gym')}
         empty="Finish a few workouts with weights logged and your best lifts and progress appear here."
       />
+      <StrengthDetail data={data} />
       <StrengthCharts {...toChartProps(data)} />
     </>
   )
