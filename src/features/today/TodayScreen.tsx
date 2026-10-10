@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useProgramme } from '../../app/useProgramme.ts'
 import { EmptyState } from '../../components/EmptyState.tsx'
 import { db } from '../../db/database.ts'
@@ -13,6 +13,7 @@ import {
   getWaterTarget,
   setSupplementStatus,
 } from '../nutrition/habits.ts'
+import { startOrResumeSession } from '../gym/sessionActions.ts'
 import { buildTodayModel, type TaskStatus } from './todayModel.ts'
 
 const STATUS_LABEL: Record<TaskStatus, string> = {
@@ -25,6 +26,7 @@ type Props = { today?: DateKey }
 
 export function TodayScreen({ today = getLocalDateKey() }: Props) {
   const plan = useProgramme()
+  const navigate = useNavigate()
   const data = useLiveQuery(
     async () => ({
       gymSessions: await db.gymSessions.toArray(),
@@ -109,12 +111,25 @@ export function TodayScreen({ today = getLocalDateKey() }: Props) {
               ))}
           </ul>
           {model.nextTask && isGymWorkout(model.nextTask.workout) && (
-            <Link className="button-link primary" to="/gym">
+            // Opens the workout itself, so starting from Today is one tap.
+            <button
+              type="button"
+              className="primary"
+              onClick={async () => {
+                const next = model.nextTask
+                if (!next) return
+                const session = await startOrResumeSession(next.workout, today)
+                navigate(`/gym/session/${session.id}`)
+              }}
+            >
               {model.nextTask.status === 'in-progress' ? 'Resume workout' : 'Start workout'}
-            </Link>
+            </button>
           )}
           {model.nextTask && isRunWorkout(model.nextTask.workout) && (
-            <Link className="button-link primary" to="/run">
+            <Link
+              className="button-link primary"
+              to={`/run/log?planned=${model.nextTask.workout.id}`}
+            >
               Log run
             </Link>
           )}
