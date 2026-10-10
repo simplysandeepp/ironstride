@@ -144,6 +144,14 @@ export type Reminder = {
   weekdays: number[]
 }
 
+export type SupplementConfig = {
+  key: string
+  label: string
+  amount: number
+  unit: string
+  enabled: boolean
+}
+
 export type AppSettings = {
   id: 'app'
   theme: 'dark' | 'light' | 'system'
@@ -153,6 +161,10 @@ export type AppSettings = {
   notificationsEnabled: boolean
   quietHoursStart?: string
   quietHoursEnd?: string
+  waterTargetMl?: number
+  waterServingMl?: number
+  supplements?: SupplementConfig[]
+  hideMealIdeas?: boolean
 }
 
 export type ExerciseCategory =

@@ -109,3 +109,49 @@ describe('nutrition flow', () => {
     expect(screen.getByRole('button', { name: 'Next day' })).toBeEnabled()
   })
 })
+
+describe('water, supplements and meal ideas', () => {
+  it('adds water, shows progress against the target, and undoes the last add', async () => {
+    renderNutrition()
+    await userEvent.click(await screen.findByRole('button', { name: 'Add 250 ml' }))
+    expect(
+      await screen.findByText(
+        (_, el) => el?.tagName === 'SPAN' && el.textContent?.trim() === '250 / 3000 ml',
+      ),
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Undo last' }))
+    await waitFor(async () => expect(await repositories.waterEntries.onDate(today)).toHaveLength(0))
+  })
+
+  it('logs a supplement as skipped and lets you turn B12 tracking on', async () => {
+    renderNutrition()
+    await userEvent.selectOptions(await screen.findByLabelText(/creatine monohydrate/i), 'Skipped')
+    await waitFor(async () =>
+      expect((await repositories.supplementLogs.onDate(today))[0]?.status).toBe('skipped'),
+    )
+
+    expect(screen.queryByLabelText(/vitamin b12/i)).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: /manage supplements/i }))
+    await userEvent.click(screen.getByRole('checkbox', { name: /track vitamin b12/i }))
+    expect(await screen.findByLabelText(/vitamin b12 \(/i)).toBeInTheDocument()
+  })
+
+  it('saves a new water target', async () => {
+    renderNutrition()
+    await userEvent.click(await screen.findByRole('button', { name: /manage supplements/i }))
+    const target = screen.getByLabelText(/daily water target/i)
+    await userEvent.clear(target)
+    await userEvent.type(target, '3500')
+    await userEvent.tab()
+    await waitFor(async () => expect((await repositories.settings.get()).waterTargetMl).toBe(3500))
+  })
+
+  it('shows meal ideas and lets you hide and restore them', async () => {
+    renderNutrition()
+    expect(await screen.findByText(/oats, fortified soy milk/i)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Hide meal ideas' }))
+    await waitFor(() => expect(screen.queryByText(/oats, fortified soy milk/i)).toBeNull())
+    await userEvent.click(screen.getByRole('button', { name: 'Show meal ideas' }))
+    expect(await screen.findByText(/oats, fortified soy milk/i)).toBeInTheDocument()
+  })
+})
