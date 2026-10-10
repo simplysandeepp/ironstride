@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.vercel/
+.env
+.env.*
+*.log
+.DS_Store
+# personal data exports must never be committed
+ironstride-backup*.json
+# local planning notes (kept on disk, not tracked)
+*_master_prompt.md
+docs/
