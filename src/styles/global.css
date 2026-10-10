@@ -688,3 +688,20 @@ input[type='radio'] {
 .week[open] > summary::after {
   content: '▴';
 }
+
+/* Seven day buttons always fit the card width: an even grid, no sideways overflow. */
+.chips.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.chips.days button {
+  min-width: 0;
+  padding: 0;
+  font-size: var(--text-sm);
+}
+
+.chips.days {
+  margin-top: var(--space-2);
+}
