@@ -89,4 +89,45 @@ describe('gym flow', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Discard' }))
     await waitFor(async () => expect(await repositories.gymSessions.all()).toHaveLength(0))
   })
+
+  it('shows last time, a progression hint, a swap option, and a skip reason', async () => {
+    await repositories.gymSessions.save({
+      id: 'old',
+      date: '2026-10-05',
+      title: 'Upper A',
+      status: 'completed',
+      exercises: [
+        {
+          exerciseId: 'bench-press',
+          exerciseNameSnapshot: 'Barbell bench press',
+          sets: [
+            { id: 'o1', setNumber: 1, loadKg: 40, reps: 8, completed: true },
+            { id: 'o2', setNumber: 2, loadKg: 40, reps: 8, completed: true },
+          ],
+        },
+      ],
+    })
+    renderGym()
+    await userEvent.click(await screen.findByRole('button', { name: 'Start workout' }))
+    expect(await screen.findByText(/last time: 40 kg × 8, 8/i)).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      screen.getAllByLabelText(/swap for an equivalent/i)[0],
+      'Dumbbell bench press',
+    )
+    expect(await screen.findByRole('heading', { name: 'Dumbbell bench press' })).toBeInTheDocument()
+
+    await userEvent.click(screen.getAllByRole('button', { name: 'Skip exercise' })[1])
+    await userEvent.selectOptions(screen.getByLabelText(/why skip/i), 'Pain or discomfort')
+    expect(await screen.findByText(/skipped: pain or discomfort/i)).toBeInTheDocument()
+    expect(screen.getByText(/stop that movement/i)).toBeInTheDocument()
+    const [s] = (await repositories.gymSessions.all()).filter((x) => x.id !== 'old')
+    expect(s.exercises[1].skippedReason).toBe('Pain or discomfort')
+    expect(s.exercises[0].substitutedFromId).toBe('bench-press')
+  })
+
+  it('lists recent finished workouts', async () => {
+    renderGym()
+    expect(await screen.findByText(/finished workouts will appear here/i)).toBeInTheDocument()
+  })
 })

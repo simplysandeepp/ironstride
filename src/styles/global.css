@@ -344,3 +344,26 @@ button.danger {
   width: min(100%, 420px);
   background: var(--surface-elevated);
 }
+
+.hint {
+  color: var(--gold);
+  font-size: var(--text-sm);
+  margin: var(--space-2) 0;
+}
+
+.rest-timer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+select {
+  font: inherit;
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}

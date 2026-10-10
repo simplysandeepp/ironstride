@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useProgramme } from '../../app/useProgramme.ts'
 import { EmptyState } from '../../components/EmptyState.tsx'
 import { db } from '../../db/database.ts'
@@ -7,6 +7,7 @@ import { formatDateLong, getLocalDateKey, type DateKey } from '../../domain/date
 import { getProgrammeWeekForDate, getWorkoutDate } from '../../domain/planner.ts'
 import { isGymWorkout, type ProgrammeWorkout } from '../../domain/programme.ts'
 import { isPlannedSessionDone } from '../../domain/streaks.ts'
+import { completedSetCount } from './sessionModel.ts'
 import { startOrResumeSession } from './sessionActions.ts'
 
 type Props = { today?: DateKey }
@@ -32,6 +33,10 @@ export function GymScreen({ today = getLocalDateKey() }: Props) {
     )
   }
 
+  const recent = sessions
+    .filter((s) => s.status === 'completed')
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 5)
   const completed = sessions
     .filter((s) => s.status === 'completed')
     .map((s) => ({ date: s.date, plannedWorkoutId: s.plannedWorkoutId }))
@@ -93,6 +98,24 @@ export function GymScreen({ today = getLocalDateKey() }: Props) {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="card" aria-labelledby="history-heading">
+        <h2 id="history-heading">Recent workouts</h2>
+        {recent.length === 0 ? (
+          <p className="helper">Finished workouts will appear here.</p>
+        ) : (
+          <ul className="task-list">
+            {recent.map((s) => (
+              <li key={s.id} className="task">
+                <Link to={`/gym/session/${s.id}`}>
+                  {s.title} · {formatDateLong(s.date)}
+                </Link>
+                <span className="helper">{completedSetCount(s)} sets</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   )

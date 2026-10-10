@@ -95,3 +95,65 @@ export function parseNumberInput(text: string): number | undefined {
   const n = Number(text)
   return Number.isFinite(n) && n >= 0 ? n : undefined
 }
+
+export const SKIP_REASONS = [
+  'Pain or discomfort',
+  'Equipment unavailable',
+  'Short on time',
+  'Too tired',
+  'Other',
+] as const
+
+/** Painful movements should stop; the app only gives general guidance, never a diagnosis. */
+export const PAIN_ADVICE =
+  'Stop that movement. If the pain continues, rest and consider seeing a qualified professional.'
+
+export function skipExercise(
+  session: GymSession,
+  exerciseIndex: number,
+  reason: string,
+): GymSession {
+  return {
+    ...session,
+    exercises: session.exercises.map((e, i) =>
+      i === exerciseIndex
+        ? { ...e, skippedReason: reason, sets: e.sets.map((s) => ({ ...s, completed: false })) }
+        : e,
+    ),
+  }
+}
+
+export function unskipExercise(session: GymSession, exerciseIndex: number): GymSession {
+  return {
+    ...session,
+    exercises: session.exercises.map((e, i) => {
+      if (i !== exerciseIndex) return e
+      const { skippedReason: _removed, ...rest } = e
+      return rest
+    }),
+  }
+}
+
+/** Swaps in an equivalent exercise, keeping the number of sets but clearing logged values. */
+export function substituteExercise(
+  session: GymSession,
+  exerciseIndex: number,
+  newExerciseId: string,
+  newId: IdFactory,
+): GymSession {
+  const replacement = getExercise(newExerciseId)
+  if (!replacement) return session
+  return {
+    ...session,
+    exercises: session.exercises.map((e, i) =>
+      i !== exerciseIndex
+        ? e
+        : {
+            exerciseId: replacement.id,
+            exerciseNameSnapshot: replacement.name,
+            substitutedFromId: e.substitutedFromId ?? e.exerciseId,
+            sets: e.sets.map((s) => ({ id: newId(), setNumber: s.setNumber, completed: false })),
+          },
+    ),
+  }
+}

@@ -59,6 +59,8 @@ export type GymExerciseLog = {
   exerciseNameSnapshot: string
   sets: GymSetLog[]
   skippedReason?: string
+  /** Set when this exercise replaced a planned one. */
+  substitutedFromId?: string
   notes?: string
 }
 
