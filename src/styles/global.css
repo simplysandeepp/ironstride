@@ -624,3 +624,16 @@ input[type='radio'] {
 .card h3 {
   margin-top: var(--space-4);
 }
+
+.reminder-list {
+  list-style: none;
+  margin: var(--space-3) 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.reminder {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-2);
+}
