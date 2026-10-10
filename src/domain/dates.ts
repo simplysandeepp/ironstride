@@ -90,3 +90,13 @@ export function getLastNDays(end: DateKey, days: number): DateKey[] {
   if (days <= 0) return []
   return getDateRange(addDays(end, -(days - 1)), end)
 }
+
+/** "Saturday, 10 October" for a date key, independent of the device timezone. */
+export function formatDateLong(key: DateKey): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  }).format(toUtcDate(key))
+}

@@ -1,0 +1,172 @@
+import { useLiveQuery } from 'dexie-react-hooks'
+import { Link } from 'react-router-dom'
+import { DEFAULT_PROGRAMME } from '../../data/trainingProgramme.ts'
+import { EmptyState } from '../../components/EmptyState.tsx'
+import { db } from '../../db/database.ts'
+import { repositories } from '../../db/repositories.ts'
+import { formatDateLong, getLocalDateKey, type DateKey } from '../../domain/dates.ts'
+import { applyOverrides, scaleProgrammeToBaseline } from '../../domain/planner.ts'
+import { isGymWorkout, isRunWorkout } from '../../domain/programme.ts'
+import { addWater, QUICK_SUPPLEMENTS, setSupplementTaken, WATER_TARGET_ML } from './quickLogs.ts'
+import { buildTodayModel, type TaskStatus } from './todayModel.ts'
+
+const STATUS_LABEL: Record<TaskStatus, string> = {
+  done: 'Done',
+  'in-progress': 'In progress',
+  pending: 'To do',
+}
+
+type Props = { today?: DateKey }
+
+export function TodayScreen({ today = getLocalDateKey() }: Props) {
+  const data = useLiveQuery(
+    async () => ({
+      profile: await repositories.profile.get(),
+      overrides: await db.plannedOverrides.toArray(),
+      gymSessions: await db.gymSessions.toArray(),
+      runLogs: await db.runLogs.toArray(),
+      foodEntries: await repositories.foodEntries.onDate(today),
+      targets: await repositories.nutritionTargets.forDate(today),
+      supplements: await repositories.supplementLogs.onDate(today),
+      water: await repositories.waterEntries.onDate(today),
+    }),
+    [today],
+  )
+
+  const programme = data?.profile
+    ? applyOverrides(
+        scaleProgrammeToBaseline(
+          DEFAULT_PROGRAMME,
+          data.profile.weeklyRunBaselineKm,
+          data.profile.recentLongRunKm,
+        ),
+        data.overrides,
+      )
+    : undefined
+
+  if (!data) return <EmptyState title="Loading">Reading your plan.</EmptyState>
+  if (!data.profile || !programme) {
+    return (
+      <EmptyState title="Set up your plan">
+        Add your details in Settings to see your daily plan.
+      </EmptyState>
+    )
+  }
+
+  const model = buildTodayModel({
+    programme,
+    startDate: data.profile.trainingStartDate,
+    today,
+    gymSessions: data.gymSessions,
+    runLogs: data.runLogs,
+    foodEntries: data.foodEntries,
+    targets: data.targets,
+  })
+  const waterMl = data.water.reduce((sum, w) => sum + w.amountMl, 0)
+  const takenKeys = new Set(
+    data.supplements.filter((s) => s.status === 'taken').map((s) => s.supplement),
+  )
+
+  return (
+    <div className="stack">
+      <section className="card">
+        <p className="eyebrow">{formatDateLong(today)}</p>
+        {model.phase === 'active' && (
+          <p>
+            Week {model.weekNumber} of 26 · {model.blockName}
+            {model.isCutback ? ' · Recovery week' : ''}
+          </p>
+        )}
+        {model.phase === 'before-start' && (
+          <p>Your plan starts on {formatDateLong(data.profile.trainingStartDate)}.</p>
+        )}
+        {model.phase === 'finished' && <p>You have finished the 26-week plan. Well done.</p>}
+        {model.phase === 'active' && (
+          <p className="helper">
+            This week: gym {model.weekGym.completed}/{model.weekGym.planned} · runs{' '}
+            {model.weekRun.completed}/{model.weekRun.planned}
+          </p>
+        )}
+      </section>
+
+      {model.phase === 'active' && (
+        <section className="card" aria-labelledby="plan-heading">
+          <h2 id="plan-heading">{model.isRestDay ? 'Recovery day' : "Today's plan"}</h2>
+          {model.isRestDay && (
+            <p className="helper">
+              Rest is part of training. An easy walk or mobility is optional.
+            </p>
+          )}
+          <ul className="task-list">
+            {model.tasks
+              .filter((t) => !model.isRestDay || t.workout.type !== 'rest')
+              .map(({ workout, status }) => (
+                <li key={workout.id} className="task">
+                  <div>
+                    <strong>{workout.title}</strong>
+                    {workout.plannedDistanceKm !== undefined && (
+                      <span className="metric-inline"> {workout.plannedDistanceKm} km</span>
+                    )}
+                  </div>
+                  <span className={`status status-${status}`}>{STATUS_LABEL[status]}</span>
+                </li>
+              ))}
+          </ul>
+          {model.nextTask && isGymWorkout(model.nextTask.workout) && (
+            <Link className="button-link primary" to="/gym">
+              {model.nextTask.status === 'in-progress' ? 'Resume workout' : 'Start workout'}
+            </Link>
+          )}
+          {model.nextTask && isRunWorkout(model.nextTask.workout) && (
+            <Link className="button-link primary" to="/run">
+              Log run
+            </Link>
+          )}
+        </section>
+      )}
+
+      <section className="card streaks" aria-label="Streaks">
+        <div>
+          <span className="metric">{model.gymStreak.current}</span>
+          <span className="helper">Gym streak (best {model.gymStreak.best})</span>
+        </div>
+        <div>
+          <span className="metric">{model.runStreak.current}</span>
+          <span className="helper">Run streak (best {model.runStreak.best})</span>
+        </div>
+      </section>
+
+      <section className="card" aria-labelledby="food-heading">
+        <h2 id="food-heading">Nutrition today</h2>
+        <p>
+          <span className="metric-inline">{model.nutrition.caloriesKcal}</span>
+          {model.targets ? ` / ${model.targets.caloriesKcal} kcal` : ' kcal'}
+        </p>
+        <p>
+          <span className="metric-inline">{model.nutrition.proteinG}</span>
+          {model.targets ? ` / ${model.targets.proteinG} g protein` : ' g protein'}
+        </p>
+      </section>
+
+      <section className="card" aria-labelledby="quick-heading">
+        <h2 id="quick-heading">Quick log</h2>
+        {QUICK_SUPPLEMENTS.map((s) => (
+          <label key={s.key} className="check">
+            <input
+              type="checkbox"
+              checked={takenKeys.has(s.key)}
+              onChange={(e) => void setSupplementTaken(today, s, e.target.checked)}
+            />
+            {s.label}
+          </label>
+        ))}
+        <p>
+          Water: <span className="metric-inline">{waterMl}</span> / {WATER_TARGET_ML} ml
+        </p>
+        <button type="button" onClick={() => void addWater(today)}>
+          Add 250 ml water
+        </button>
+      </section>
+    </div>
+  )
+}
