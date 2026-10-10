@@ -587,3 +587,20 @@ input[type='radio'] {
 .heatmap {
   padding: 3px;
 }
+
+.offline-pill {
+  margin: 0 var(--space-4) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.steps {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}

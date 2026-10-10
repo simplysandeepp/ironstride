@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { NAV_ITEMS } from './app/navigation.ts'
 import { BottomNavigation } from './components/BottomNavigation.tsx'
+import { OfflineIndicator } from './components/OfflineIndicator.tsx'
 import { PageHeader } from './components/PageHeader.tsx'
 import { repositories } from './db/repositories.ts'
 import { GymScreen } from './features/gym/GymScreen.tsx'
@@ -38,6 +39,7 @@ export default function App() {
   return (
     <div className="app-shell">
       <PageHeader title={title} theme={theme} onCycleTheme={cycleTheme} />
+      <OfflineIndicator />
       <main className="page-body">
         <Routes>
           <Route path="/" element={<TodayScreen />} />
